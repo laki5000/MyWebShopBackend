@@ -1,0 +1,38 @@
+﻿syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/wrappers.proto";
+
+service AuthServiceUser {
+    rpc Create (GrpcCreateAspNetUserDto) returns (GrpcAspNetUserResponseDto);
+    rpc Login (GrpcLoginAspNetUserDto) returns (GrpcStringResponseDto);
+}
+
+message GrpcCreateAspNetUserDto {
+    string user_name = 1;
+    string password = 2;
+}
+
+message GrpcLoginAspNetUserDto {
+    string user_name = 1;
+    string password = 2;
+}
+
+message GrpcAspNetUserDto {
+    string id = 1;
+    string user_name = 2;
+}
+
+message GrpcAspNetUserResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+    GrpcAspNetUserDto data = 3;
+}
+
+message GrpcStringResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+    google.protobuf.StringValue data = 3;
+}
+

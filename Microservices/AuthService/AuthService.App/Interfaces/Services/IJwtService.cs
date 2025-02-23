@@ -1,0 +1,9 @@
+﻿using AuthService.Models;
+
+namespace AuthService.Interfaces.Services
+{
+    public interface IJwtService
+    {
+        public string GenerateToken(AspNetUser user);
+    }
+}

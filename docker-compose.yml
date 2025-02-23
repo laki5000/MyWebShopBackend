@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:latest
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    volumes:
+      - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
+
+  authservice:
+    image: ${DOCKER_REGISTRY-}authservice
+    build:
+      context: .
+      dockerfile: Microservices/AuthService/AuthService.App/Dockerfile
+    volumes:
+      - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
+      - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro 
+
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: .
+      dockerfile: Microservices/UserService/UserService.App/Dockerfile
+    volumes:
+      - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro
+
