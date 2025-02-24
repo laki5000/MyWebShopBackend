@@ -3,6 +3,7 @@ using ApiGateway.Grpc;
 using ApiGateway.Interfaces.Grpc;
 using ApiGateway.Mapping;
 using ApiGateway.Middleware;
+using ApiGateway.Middlewares;
 using Auth;
 using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
@@ -108,6 +109,7 @@ void ConfigureMiddleware(WebApplication app)
 
     // Middlewares 
     app.UseMiddleware<JwtAuthMiddleware>();
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
 
     // Enforce HTTPS redirection
     app.UseHttpsRedirection();

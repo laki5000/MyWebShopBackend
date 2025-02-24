@@ -47,7 +47,7 @@ namespace UserService.App.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }
