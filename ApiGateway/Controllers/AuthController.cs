@@ -5,9 +5,12 @@ using ApiGateway.Interfaces.Grpc;
 using Auth;
 using AuthService.Shared.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Shared.Configurations;
+using Shared.Dtos;
+using Shared.Enums;
 
 namespace ApiGateway.Controllers
 {
@@ -18,23 +21,48 @@ namespace ApiGateway.Controllers
         private readonly JwtSettings _jwtSettings;
 
         private readonly IAuthServiceUserClientAdapter _authServiceUserClientAdapter;
+        private readonly IUserServiceUserClientAdapter _userServiceUserClientAdapter;
 
-        public AuthController(IOptions<AppSettings> appSettings, IAuthServiceUserClientAdapter authServiceUserClientAdapter)
+        public AuthController(IOptions<AppSettings> appSettings, IAuthServiceUserClientAdapter authServiceUserClientAdapter, IUserServiceUserClientAdapter userServiceUserClientAdapter)
         {
             _jwtSettings = appSettings.Value.JwtSettings ?? throw new ArgumentNullException(nameof(appSettings.Value.JwtSettings));
             _authServiceUserClientAdapter = authServiceUserClientAdapter ?? throw new ArgumentException(nameof(authServiceUserClientAdapter));
+            _userServiceUserClientAdapter = userServiceUserClientAdapter ?? throw new ArgumentException(nameof(userServiceUserClientAdapter));
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CreateAspNetUserDto createAspNetUserDto)
+        public async Task<IActionResult> Register([FromBody] CreateAspNetUserAndUserDto createAspNetUserAndUserDto)
         {
-            var authServiceResult = await _authServiceUserClientAdapter.CreateAsync(createAspNetUserDto);
+            var authServiceResult = await _authServiceUserClientAdapter.CreateAsync(createAspNetUserAndUserDto.AspNetUser);
             
             if (!authServiceResult.IsSuccess)
             {
                 var result = GetObjectResult(authServiceResult);
 
                 return result;
+            }
+
+            try
+            {
+                createAspNetUserAndUserDto.User.Id = authServiceResult.Data?.Id;
+
+                var userServiceResult = await _userServiceUserClientAdapter.CreateAsync(createAspNetUserAndUserDto.User);
+
+                if (!userServiceResult.IsSuccess)
+                {
+                    var result = GetObjectResult(userServiceResult);
+
+                    return result;
+                }
+            }
+            catch (Exception ex) 
+            {
+                var response = ApiResponseDto.Fail(ErrorCodeEnum.UNKNOWN_ERROR);
+
+                return new ObjectResult(response)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
             }
 
             return NoContent();

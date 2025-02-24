@@ -2,6 +2,8 @@
 using AuthService.Shared.Dtos;
 using AutoMapper;
 using Shared.Dtos;
+using User;
+using UserService.Shared.Dtos;
 
 namespace ApiGateway.Mapping
 {
@@ -11,9 +13,11 @@ namespace ApiGateway.Mapping
         {
             CreateMap<CreateAspNetUserDto, GrpcCreateAspNetUserDto>();
             CreateMap<LoginAspNetUserDto, GrpcLoginAspNetUserDto>();
+            CreateMap<CreateUserDto, GrpcCreateUserDto>();
             CreateMap<GrpcAspNetUserDto, AspNetUserDto>();
             CreateMap<GrpcAspNetUserResponseDto, ApiResponseDto<AspNetUserDto>>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
+            CreateMap<GrpcResponseDto, ApiResponseDto>();
         }
     }
 }

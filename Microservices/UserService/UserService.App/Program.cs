@@ -10,6 +10,8 @@ using UserService.App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.grpc.json", optional: false, reloadOnChange: true);
+
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();

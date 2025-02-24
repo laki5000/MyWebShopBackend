@@ -21,6 +21,11 @@ namespace UserService.App.Services
 
         public async Task<ApiResponseDto> CreateAsync(CreateUserDto createUserDto)
         {
+            if (createUserDto.Id == null) 
+            {
+                throw new ArgumentNullException(nameof(createUserDto.Id));
+            }
+
             var entity = _mapper.Map<UserEntity>(createUserDto);
 
             await _userRepository.AddAsync(entity);

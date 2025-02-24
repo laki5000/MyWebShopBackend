@@ -12,7 +12,7 @@ using UserService.App.Data;
 namespace UserService.App.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250223142038_InitialCreate")]
+    [Migration("20250224131241_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace UserService.App.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }
