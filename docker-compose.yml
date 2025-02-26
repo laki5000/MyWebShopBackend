@@ -4,10 +4,21 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
       - mynetwork
+    expose:
+      - "5432"
+
+  kafka:
+    image: apache/kafka:latest
+    networks:
+      - mynetwork
+    expose:
+      - "9092"
 
   apigateway:
     image: ${DOCKER_REGISTRY-}apigateway
@@ -32,13 +43,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
-    expose:
-      - "5000"
     volumes:
       - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
       - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro
+      - ./Shared/Settings/appsettings.kafka.json:/app/appsettings.kafka.json:ro
     networks:
       - mynetwork
+    expose:
+      - "5000"
 
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
@@ -48,12 +60,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
-    expose:
-      - "5000"
     volumes:
       - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro
     networks:
       - mynetwork
+    expose:
+      - "5000"
 
 networks:
   mynetwork:

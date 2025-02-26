@@ -1,5 +1,5 @@
+using ApiGateway.Communication.Grpc.Clients;
 using ApiGateway.Configurations;
-using ApiGateway.Grpc;
 using ApiGateway.Interfaces.Grpc;
 using ApiGateway.Mapping;
 using ApiGateway.Middleware;

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using UserService.App.Communication.Grpc.Server;
 using UserService.App.Configurations;
 using UserService.App.Data;
-using UserService.App.Grpc;
 using UserService.App.Interfaces.Repositories;
 using UserService.App.Interfaces.Services;
 using UserService.App.Mapping;

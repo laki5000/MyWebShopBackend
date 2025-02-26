@@ -6,5 +6,6 @@ namespace AuthService.Configurations
     {
         public required string PostgresConnection { get; set; }
         public required JwtSettings JwtSettings { get; set; }
+        public required KafkaSettings KafkaSettings { get; set; }
     }
 }

@@ -1,6 +1,7 @@
+using AuthService.App.Communication.Grpc.Server;
+using AuthService.App.Communication.Kafka.Server;
 using AuthService.Configurations;
 using AuthService.Data;
-using AuthService.GrpcServices;
 using AuthService.Interfaces.Repositories;
 using AuthService.Interfaces.Services;
 using AuthService.Mapping;
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.jwt.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("appsettings.grpc.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.kafka.json", optional: false, reloadOnChange: true);
 
 ConfigureServices(builder.Services, builder.Configuration);
 
@@ -58,6 +60,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 
     // Grpc
     services.AddGrpc();
+
+    // Kafka
+    services.AddHostedService<KafkaConsumerImpl>();
 }
 
 void ConfigureEndpoints(WebApplication app)
