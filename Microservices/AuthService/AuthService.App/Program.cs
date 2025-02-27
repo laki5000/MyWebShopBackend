@@ -1,5 +1,5 @@
-using AuthService.App.Communication.Grpc.Server;
-using AuthService.App.Communication.Kafka.Server;
+using AuthService.App.Communication.Grpc;
+using AuthService.App.Communication.Kafka;
 using AuthService.Configurations;
 using AuthService.Data;
 using AuthService.Interfaces.Repositories;
@@ -23,6 +23,7 @@ var app = builder.Build();
 
 ConfigureEndpoints(app);
 ApplyMigrations(app);
+ApplyKafkaTopicCreation(app);
 
 app.Run();
 
@@ -62,6 +63,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddGrpc();
 
     // Kafka
+    builder.Services.AddSingleton<KafkaTopicManager>();
     services.AddHostedService<KafkaConsumerImpl>();
 }
 
@@ -80,4 +82,12 @@ void ApplyMigrations(WebApplication app)
     var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
 
     dbContext.Database.Migrate();
+}
+
+void ApplyKafkaTopicCreation(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var kafkaTopicManager = scope.ServiceProvider.GetRequiredService<KafkaTopicManager>();
+
+    kafkaTopicManager.EnsureTopicsExistAsync().GetAwaiter().GetResult();
 }

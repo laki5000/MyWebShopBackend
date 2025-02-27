@@ -4,7 +4,7 @@ using AuthService.Shared.Dtos;
 using AutoMapper;
 using Shared.Dtos;
 
-namespace ApiGateway.Communication.Grpc.Clients
+namespace ApiGateway.Communication.Grpc
 {
     public class AuthServiceUserClientAdapterImpl : IAuthServiceUserClientAdapter
     {

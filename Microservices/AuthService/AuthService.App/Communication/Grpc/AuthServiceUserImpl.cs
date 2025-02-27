@@ -4,7 +4,7 @@ using AuthService.Shared.Dtos;
 using AutoMapper;
 using Grpc.Core;
 
-namespace AuthService.App.Communication.Grpc.Server
+namespace AuthService.App.Communication.Grpc
 {
     public class AuthServiceUserImpl : AuthServiceUser.AuthServiceUserBase
     {

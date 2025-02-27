@@ -4,7 +4,7 @@ using Shared.Dtos;
 using User;
 using UserService.Shared.Dtos;
 
-namespace ApiGateway.Communication.Grpc.Clients
+namespace ApiGateway.Communication.Grpc
 {
     public class UserServiceUserClientAdapterImpl : IUserServiceUserClientAdapter
     {

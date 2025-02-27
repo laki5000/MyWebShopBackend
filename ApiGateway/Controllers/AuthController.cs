@@ -4,6 +4,7 @@ using ApiGateway.Constants;
 using ApiGateway.Interfaces.Grpc;
 using Auth;
 using AuthService.Shared.Dtos;
+using AuthService.Shared.Interfaces.Communication.Kafka;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -23,12 +24,23 @@ namespace ApiGateway.Controllers
         private readonly IAuthServiceUserClientAdapter _authServiceUserClientAdapter;
         private readonly IUserServiceUserClientAdapter _userServiceUserClientAdapter;
 
-        public AuthController(IOptions<AppSettings> appSettings, IAuthServiceUserClientAdapter authServiceUserClientAdapter, IUserServiceUserClientAdapter userServiceUserClientAdapter)
-        {
-            _jwtSettings = appSettings.Value.JwtSettings ?? throw new ArgumentNullException(nameof(appSettings.Value.JwtSettings));
-            _authServiceUserClientAdapter = authServiceUserClientAdapter ?? throw new ArgumentException(nameof(authServiceUserClientAdapter));
-            _userServiceUserClientAdapter = userServiceUserClientAdapter ?? throw new ArgumentException(nameof(userServiceUserClientAdapter));
+        private readonly IAuthServiceKafkaProducer _authServiceKafkaProducer;
+
+        public AuthController(
+            IOptions<AppSettings> appSettings,
+            IAuthServiceUserClientAdapter authServiceUserClientAdapter,
+            IUserServiceUserClientAdapter userServiceUserClientAdapter,
+            IAuthServiceKafkaProducer authServiceKafkaProducer)
+        {            _jwtSettings = appSettings.Value.JwtSettings
+                ?? throw new ArgumentNullException(nameof(appSettings.Value.JwtSettings));
+            _authServiceUserClientAdapter = authServiceUserClientAdapter
+                ?? throw new ArgumentException(nameof(authServiceUserClientAdapter));
+            _userServiceUserClientAdapter = userServiceUserClientAdapter
+                ?? throw new ArgumentException(nameof(userServiceUserClientAdapter));
+            _authServiceKafkaProducer = authServiceKafkaProducer
+                ?? throw new ArgumentException(nameof(authServiceKafkaProducer));
         }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateAspNetUserAndUserDto createAspNetUserAndUserDto)
@@ -42,14 +54,18 @@ namespace ApiGateway.Controllers
                 return result;
             }
 
+            var userId = authServiceResult.Data?.Id ?? throw new ArgumentNullException(nameof(authServiceResult.Data.Id));
+
             try
             {
-                createAspNetUserAndUserDto.User.Id = authServiceResult.Data?.Id;
+                createAspNetUserAndUserDto.User.Id = userId;
 
                 var userServiceResult = await _userServiceUserClientAdapter.CreateAsync(createAspNetUserAndUserDto.User);
 
                 if (!userServiceResult.IsSuccess)
                 {
+                    await _authServiceKafkaProducer.ForceDeleteAspNetUserAsync(userId);
+
                     var result = GetObjectResult(userServiceResult);
 
                     return result;
@@ -57,6 +73,8 @@ namespace ApiGateway.Controllers
             }
             catch (Exception ex) 
             {
+                await _authServiceKafkaProducer.ForceDeleteAspNetUserAsync(userId);
+
                 var response = ApiResponseDto.Fail(ErrorCodeEnum.UNKNOWN_ERROR);
 
                 return new ObjectResult(response)

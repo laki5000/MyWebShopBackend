@@ -2,7 +2,7 @@
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 
-namespace AuthService.App.Communication.Kafka.Server
+namespace AuthService.App.Communication.Kafka
 {
     public class KafkaConsumerImpl : BackgroundService
     {
@@ -33,24 +33,28 @@ namespace AuthService.App.Communication.Kafka.Server
         {
             try
             {
-                while (!stoppingToken.IsCancellationRequested)
+                await Task.Run(() =>
                 {
-                    try
+                    while (!stoppingToken.IsCancellationRequested)
                     {
-                        var consumeResult = _consumer.Consume(stoppingToken);
-
-                        if (consumeResult.IsPartitionEOF)
+                        try
                         {
-                            continue;
+                            var consumeResult = _consumer.Consume(stoppingToken);
+
+                            if (consumeResult.IsPartitionEOF)
+                            {
+                                continue;
+                            }
+
+                            var message = consumeResult.Message.Value;
+
+                            // Üzenet feldolgozás implementálása
                         }
-
-                        var message = consumeResult.Message.Value;
-
-                        //implement
+                        catch (ConsumeException ex)
+                        {
+                        }
                     }
-                    catch (ConsumeException ex)
-                    { }
-                }
+                }, stoppingToken);
             }
             finally
             {

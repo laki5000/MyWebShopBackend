@@ -5,7 +5,7 @@ using User;
 using UserService.App.Interfaces.Services;
 using UserService.Shared.Dtos;
 
-namespace UserService.App.Communication.Grpc.Server
+namespace UserService.App.Communication.Grpc
 {
     public class UserServiceUserImpl : UserServiceUser.UserServiceUserBase
     {

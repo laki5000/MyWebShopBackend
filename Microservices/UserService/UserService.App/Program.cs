@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.App.Communication.Grpc.Server;
+using UserService.App.Communication.Grpc;
 using UserService.App.Configurations;
 using UserService.App.Data;
 using UserService.App.Interfaces.Repositories;

@@ -1,12 +1,16 @@
-using ApiGateway.Communication.Grpc.Clients;
+using ApiGateway.Communication.Grpc;
 using ApiGateway.Configurations;
 using ApiGateway.Interfaces.Grpc;
 using ApiGateway.Mapping;
 using ApiGateway.Middleware;
 using ApiGateway.Middlewares;
 using Auth;
+using AuthService.Shared.Communication.Kafka;
+using AuthService.Shared.Interfaces.Communication.Kafka;
 using Grpc.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Configurations;
 using System.Text;
 using System.Text.Json.Serialization;
 using User;
@@ -14,6 +18,7 @@ using User;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.jwt.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.kafka.json", optional: false, reloadOnChange: true);
 
 ConfigureServices(builder.Services, builder.Configuration);
 
@@ -28,6 +33,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 {
     // App settings
     services.Configure<AppSettings>(configuration);
+    services.Configure<KafkaSettings>(configuration.GetSection("KafkaSettings"));
 
     // Services
     services.AddScoped<IAuthServiceUserClientAdapter, AuthServiceUserClientAdapterImpl>();
@@ -97,6 +103,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 
     // OpenApi
     services.AddOpenApi();
+
+    // Kafka
+    services.AddSingleton<IAuthServiceKafkaProducer, AuthServiceKafkaProducerImpl>();
 }
 
 void ConfigureMiddleware(WebApplication app)

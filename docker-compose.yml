@@ -13,8 +13,24 @@ services:
     expose:
       - "5432"
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    networks:
+      - mynetwork
+    expose:
+      - "2181"
+
   kafka:
-    image: apache/kafka:latest
+    image: confluentinc/cp-kafka:latest
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+    depends_on:
+      - zookeeper
     networks:
       - mynetwork
     expose:
@@ -32,6 +48,7 @@ services:
       - "8081:8081"
     volumes:
       - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
+      - ./Shared/Settings/appsettings.kafka.json:/app/appsettings.kafka.json:ro
     networks:
       - mynetwork
 
