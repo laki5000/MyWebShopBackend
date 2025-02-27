@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuthService.App.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250223115326_InitialCreate")]
+    [Migration("20250227135416_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,6 +41,12 @@ namespace AuthService.App.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")

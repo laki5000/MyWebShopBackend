@@ -12,7 +12,7 @@ using UserService.App.Data;
 namespace UserService.App.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250224131241_InitialCreate")]
+    [Migration("20250227135448_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -34,6 +34,12 @@ namespace UserService.App.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")

@@ -1,4 +1,5 @@
 ﻿using AuthService.Configurations;
+using AuthService.Interfaces.Services;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 
@@ -8,7 +9,9 @@ namespace AuthService.App.Communication.Kafka
     {
         private readonly IConsumer<string, string> _consumer;
 
-        public KafkaConsumerImpl(IOptions<AppSettings> appSettings)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+        public KafkaConsumerImpl(IOptions<AppSettings> appSettings, IServiceScopeFactory serviceScopeFactory)
         {
             var kafkaSettings = appSettings.Value.KafkaSettings ?? throw new ArgumentNullException(nameof(appSettings.Value.KafkaSettings));
             var autoOffSetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings.AutoOffsetReset);
@@ -22,6 +25,8 @@ namespace AuthService.App.Communication.Kafka
 
             _consumer = new ConsumerBuilder<string, string>(config).Build();
             _consumer.Subscribe(topics);
+
+            _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -48,7 +53,12 @@ namespace AuthService.App.Communication.Kafka
 
                             var message = consumeResult.Message.Value;
 
-                            // Üzenet feldolgozás implementálása
+                            using (var scope = _serviceScopeFactory.CreateScope())
+                            {
+                                var aspNetUserService = scope.ServiceProvider.GetRequiredService<IAspNetUserService>();
+
+                                
+                            }
                         }
                         catch (ConsumeException ex)
                         {

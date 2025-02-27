@@ -2,11 +2,9 @@
 using ApiGateway.Configurations;
 using ApiGateway.Constants;
 using ApiGateway.Interfaces.Grpc;
-using Auth;
 using AuthService.Shared.Dtos;
 using AuthService.Shared.Interfaces.Communication.Kafka;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Shared.Configurations;
@@ -55,7 +53,7 @@ namespace ApiGateway.Controllers
             }
 
             var userId = authServiceResult.Data?.Id ?? throw new ArgumentNullException(nameof(authServiceResult.Data.Id));
-
+            await _authServiceKafkaProducer.ForceDeleteAspNetUserAsync(userId);
             try
             {
                 createAspNetUserAndUserDto.User.Id = userId;
