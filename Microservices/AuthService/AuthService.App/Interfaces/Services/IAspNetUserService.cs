@@ -5,7 +5,7 @@ namespace AuthService.Interfaces.Services
 {
     public interface IAspNetUserService
     {
-        Task<ApiResponseDto<AspNetUserDto>> CreateAsync(CreateAspNetUserDto createAspNetUserDto);
+        Task<ApiResponseDto<string>> CreateAsync(CreateAspNetUserDto createAspNetUserDto);
         Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto loginAspNetUserDto);
     }
 }

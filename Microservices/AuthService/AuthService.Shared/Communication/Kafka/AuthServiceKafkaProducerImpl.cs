@@ -1,5 +1,6 @@
 ﻿using AuthService.Shared.Interfaces.Communication.Kafka;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared.Configurations;
 
@@ -7,26 +8,52 @@ namespace AuthService.Shared.Communication.Kafka
 {
     public class AuthServiceKafkaProducerImpl : IAuthServiceKafkaProducer
     {
+        private readonly ILogger<AuthServiceKafkaProducerImpl> _logger;
         private readonly IProducer<string, string> _producer;
 
-        public AuthServiceKafkaProducerImpl(IOptions<KafkaSettings> kafkaSettings)
+        public AuthServiceKafkaProducerImpl(ILogger<AuthServiceKafkaProducerImpl> logger, IOptions<KafkaSettings> kafkaSettings)
         {
-            var bootstrapServers = kafkaSettings.Value.BootstrapServers 
-                ?? throw new ArgumentNullException(nameof(kafkaSettings.Value.BootstrapServers));
+            _logger = logger;
+            _producer = CreateKafkaProducer(kafkaSettings.Value);
+        }
+
+        private IProducer<string, string> CreateKafkaProducer(KafkaSettings kafkaSettings)
+        {
             var config = new ProducerConfig
             {
-                BootstrapServers = bootstrapServers
+                BootstrapServers = kafkaSettings.BootstrapServers
             };
-            _producer = new ProducerBuilder<string, string>(config).Build();
+
+            return new ProducerBuilder<string, string>(config).Build();
         }
+
 
         public async Task ForceDeleteAspNetUserAsync(string userId)
         {
-            await _producer.ProduceAsync("aspnetuser-force-delete", new Message<string, string>
+            if (string.IsNullOrEmpty(userId))
             {
-                Key = "userId",
-                Value = userId
-            });
+                _logger.LogError("Invalid userId: {UserId}", userId);
+                throw new ArgumentException("UserId cannot be null or empty.", nameof(userId));
+            }
+
+            try
+            {
+                var message = new Message<string, string>
+                {
+                    Key = "userId",
+                    Value = userId
+                };
+
+                var topic = AuthServiceKafkaTopics.AspNetUserForceDelete;
+                var deliveryResult = await _producer.ProduceAsync(topic, message);
+
+                _logger.LogInformation("Successfully sent '{Topic}' message to Kafka for user ID: {UserId}", topic, userId);
+            }
+            catch (ProduceException<string, string> ex)
+            {
+                _logger.LogError(ex, "Error producing message to Kafka: {Topic}", userId);
+                throw new Exception("Error producing message to Kafka", ex);
+            }
         }
     }
 }

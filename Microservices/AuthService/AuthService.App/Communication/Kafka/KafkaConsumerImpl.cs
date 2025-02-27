@@ -1,5 +1,6 @@
 ﻿using AuthService.Configurations;
 using AuthService.Interfaces.Services;
+using AuthService.Shared.Communication.Kafka;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 
@@ -7,26 +8,26 @@ namespace AuthService.App.Communication.Kafka
 {
     public class KafkaConsumerImpl : BackgroundService
     {
+        private readonly ILogger<KafkaConsumerImpl> _logger;
         private readonly IConsumer<string, string> _consumer;
-
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public KafkaConsumerImpl(IOptions<AppSettings> appSettings, IServiceScopeFactory serviceScopeFactory)
+        private readonly List<string> _topics = new List<string>
         {
-            var kafkaSettings = appSettings.Value.KafkaSettings ?? throw new ArgumentNullException(nameof(appSettings.Value.KafkaSettings));
-            var autoOffSetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings.AutoOffsetReset);
-            var config = new ConsumerConfig
-            {
-                BootstrapServers = kafkaSettings.BootstrapServers,
-                GroupId = "auth-service-group",
-                AutoOffsetReset = autoOffSetReset,
-            };
-            var topics = new[] { "aspnetuser-force-delete" };
+            AuthServiceKafkaTopics.AspNetUserForceDelete,
+        };
 
-            _consumer = new ConsumerBuilder<string, string>(config).Build();
-            _consumer.Subscribe(topics);
+        private readonly string _authServiceGroup = "auth-service-group";
 
-            _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        public KafkaConsumerImpl(
+            ILogger<KafkaConsumerImpl> logger,
+            IOptions<AppSettings> appSettings, 
+            IServiceScopeFactory serviceScopeFactory
+        )
+        {
+            _logger = logger;
+            _serviceScopeFactory = serviceScopeFactory;
+            _consumer = CreateConsumer(appSettings);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,41 +35,88 @@ namespace AuthService.App.Communication.Kafka
             return StartConsumerLoop(stoppingToken);
         }
 
+        private IConsumer<string, string> CreateConsumer(IOptions<AppSettings> appSettings)
+        {
+            var kafkaSettings = appSettings.Value.KafkaSettings;
+            var autoOffsetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings.AutoOffsetReset);
+            var config = new ConsumerConfig
+            {
+                BootstrapServers = kafkaSettings.BootstrapServers,
+                GroupId = _authServiceGroup,
+                AutoOffsetReset = autoOffsetReset,
+            };
+
+            var consumer = new ConsumerBuilder<string, string>(config).Build();
+            consumer.Subscribe(_topics);
+
+            return consumer;
+        }
+
         private async Task StartConsumerLoop(CancellationToken stoppingToken)
         {
             try
             {
-                await Task.Run(() =>
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    while (!stoppingToken.IsCancellationRequested)
+                    try
                     {
-                        try
+                        var consumeResult = _consumer.Consume(stoppingToken);
+
+                        if (consumeResult.IsPartitionEOF)
                         {
-                            var consumeResult = _consumer.Consume(stoppingToken);
-
-                            if (consumeResult.IsPartitionEOF)
-                            {
-                                continue;
-                            }
-
-                            var message = consumeResult.Message.Value;
-
-                            using (var scope = _serviceScopeFactory.CreateScope())
-                            {
-                                var aspNetUserService = scope.ServiceProvider.GetRequiredService<IAspNetUserService>();
-
-                                
-                            }
+                            continue;
                         }
-                        catch (ConsumeException ex)
-                        {
-                        }
+
+                        await ProcessResultAsync(consumeResult);
                     }
-                }, stoppingToken);
+                    catch (ConsumeException ex)
+                    {
+                        _logger.LogError($"Error consuming message: {ex.Error.Reason}");
+                    }
+                }
             }
             finally
             {
                 _consumer.Close();
+            }
+        }
+
+        private async Task ProcessResultAsync(ConsumeResult<string, string> result)
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                try
+                {
+                    switch (result.Topic)
+                    {
+                        case AuthServiceKafkaTopics.AspNetUserForceDelete:
+                            await HandleAspNetUserForceDeleteAsync(scope, result);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing message: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task HandleAspNetUserForceDeleteAsync(IServiceScope scope, ConsumeResult<string, string> result)
+        {
+            var topic = result.Topic;
+            var message = result.Message.Value;
+
+            try
+            {
+                var aspNetUserService = scope.ServiceProvider.GetRequiredService<IAspNetUserService>();
+                
+                //todo 
+
+                _logger.LogInformation("Successfully processed '{Topic}' message for user ID: {UserId}", topic, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error handling {Topic} message for user ID: {UserId}. Exception: {ExceptionMessage}", topic, message, ex.Message);
             }
         }
     }

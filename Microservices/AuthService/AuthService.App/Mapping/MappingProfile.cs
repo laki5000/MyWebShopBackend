@@ -13,9 +13,6 @@ namespace AuthService.Mapping
             CreateMap<GrpcCreateAspNetUserDto, CreateAspNetUserDto>();
             CreateMap<GrpcLoginAspNetUserDto, LoginAspNetUserDto>();
             CreateMap<CreateAspNetUserDto, AspNetUser>();
-            CreateMap<AspNetUser, AspNetUserDto>();
-            CreateMap<AspNetUserDto, GrpcAspNetUserDto>();
-            CreateMap<ApiResponseDto<AspNetUserDto>, GrpcAspNetUserResponseDto>();
             CreateMap<ApiResponseDto<string>, GrpcStringResponseDto>();
         }
     }

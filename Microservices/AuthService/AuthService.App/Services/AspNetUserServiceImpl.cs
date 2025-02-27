@@ -11,34 +11,39 @@ namespace AuthService.Services
 {
     public class AspNetUserServiceImpl : IAspNetUserService
     {
+        private readonly ILogger<AspNetUserServiceImpl> _logger;
         private readonly IJwtService _jwtService;
-
         private readonly IAspNetUserRepository _aspNetUserRepository;
-
         private readonly IMapper _mapper;
-
         private readonly IPasswordHasher<AspNetUser> _passwordHasher;
         
 
-        public AspNetUserServiceImpl(IJwtService jwtService, IAspNetUserRepository aspNetUserRepository, IMapper mapper, IPasswordHasher<AspNetUser> passwordHasher)
+        public AspNetUserServiceImpl(
+            ILogger<AspNetUserServiceImpl> logger,
+            IJwtService jwtService, 
+            IAspNetUserRepository aspNetUserRepository, 
+            IMapper mapper, 
+            IPasswordHasher<AspNetUser> passwordHasher
+        )
         {
+            _logger = logger;
             _jwtService = jwtService;
             _aspNetUserRepository = aspNetUserRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<ApiResponseDto<AspNetUserDto>> CreateAsync(CreateAspNetUserDto createAspNetUserDto)
+        public async Task<ApiResponseDto<string>> CreateAsync(CreateAspNetUserDto createAspNetUserDto)
         {
             var normalizedUsername = createAspNetUserDto.UserName.Normalize();
-            var existsByUserName = await _aspNetUserRepository.ExistsByNormalizedUserNameAsync(normalizedUsername);
 
+            var existsByUserName = await _aspNetUserRepository.ExistsByNormalizedUserNameAsync(normalizedUsername);
             if (existsByUserName)
             {
-                var failDto = ApiResponseDto<AspNetUserDto>.Fail(ErrorCodeEnum.USERNAME_ALREADY_EXISTS);
+                _logger.LogError("Username already exists: {UserName}", createAspNetUserDto.UserName);
 
+                var failDto = ApiResponseDto<string>.Fail(ErrorCodeEnum.USERNAME_ALREADY_EXISTS);
                 return failDto;
-
             }
 
             var entity = _mapper.Map<AspNetUser>(createAspNetUserDto);
@@ -48,21 +53,20 @@ namespace AuthService.Services
 
             entity = await _aspNetUserRepository.AddAsync(entity);
 
-            var dto = _mapper.Map<AspNetUserDto>(entity);
-            var successDto = ApiResponseDto<AspNetUserDto>.Success(dto);
-
+            var successDto = ApiResponseDto<string>.Success(entity.Id);
             return successDto;
         }
 
         public async Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto loginAspNetUserDto)
         {
             var normalizedUsername = loginAspNetUserDto.UserName.Normalize();
-            var entity = await _aspNetUserRepository.GetByNormalizedUserNameAsync(normalizedUsername);
 
+            var entity = await _aspNetUserRepository.GetByNormalizedUserNameAsync(normalizedUsername);
             if (entity == null)
             {
-                var failDto = ApiResponseDto<string>.Fail(ErrorCodeEnum.USERNAME_OR_PASSWORD_IS_WRONG);
+                _logger.LogError("Login failed: Username {UserName} not found", loginAspNetUserDto.UserName);
 
+                var failDto = ApiResponseDto<string>.Fail(ErrorCodeEnum.USERNAME_OR_PASSWORD_IS_WRONG);
                 return failDto;
             }
 
@@ -70,11 +74,11 @@ namespace AuthService.Services
             var userName = entity.UserName ?? throw new ArgumentNullException(nameof(entity.UserName));
 
             var result = _passwordHasher.VerifyHashedPassword(entity, passwordHash, loginAspNetUserDto.Password);
-
             if (result == PasswordVerificationResult.Failed)
             {
-                var failDto = ApiResponseDto<string>.Fail(ErrorCodeEnum.USERNAME_OR_PASSWORD_IS_WRONG);
+                _logger.LogError("Login failed: Invalid password for user {UserName}", loginAspNetUserDto.UserName);
 
+                var failDto = ApiResponseDto<string>.Fail(ErrorCodeEnum.USERNAME_OR_PASSWORD_IS_WRONG);
                 return failDto;
             }
 
