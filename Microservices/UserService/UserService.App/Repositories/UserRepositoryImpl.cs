@@ -11,7 +11,7 @@ namespace UserService.App.Repositories
 
         public UserRepositoryImpl(UserDbContext context) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Shared.BaseClasses.Repositories
 
         public BasePgRepositoryImpl(DbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
 
         public async Task<T> AddAsync(T entity)

@@ -19,13 +19,13 @@ namespace AuthService.App.Communication.Grpc
             _mapper = mapper;
         }
 
-        public override async Task<GrpcAspNetUserResponseDto> Create(GrpcCreateAspNetUserDto request, ServerCallContext context)
+        public override async Task<GrpcStringResponseDto> Create(GrpcCreateAspNetUserDto request, ServerCallContext context)
         {
             _logger.LogInformation("Create user request received for UserName: {UserName}", request.UserName);
 
             var createAspNetUserDto = _mapper.Map<CreateAspNetUserDto>(request);
             var result = await _aspNetUserService.CreateAsync(createAspNetUserDto);
-            var response = _mapper.Map<GrpcAspNetUserResponseDto>(result);
+            var response = _mapper.Map<GrpcStringResponseDto>(result);
 
             _logger.LogInformation("User created successfully with ID: {UserId}", result.Data);
             return response;

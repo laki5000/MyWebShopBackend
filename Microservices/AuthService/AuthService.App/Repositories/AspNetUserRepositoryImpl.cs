@@ -12,7 +12,7 @@ namespace AuthService.Repositories
 
         public AspNetUserRepositoryImpl(AuthDbContext context) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context; ;
         }
 
         public async Task<bool> ExistsByNormalizedUserNameAsync(string normalizedUserName)
