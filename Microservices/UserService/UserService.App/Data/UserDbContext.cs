@@ -15,6 +15,10 @@ namespace UserService.App.Data
 
             modelBuilder.Entity<UserEntity>()
                 .HasKey(u => u.Id);
+
+            modelBuilder.Entity<UserEntity>()
+                .HasIndex(u => u.DeletedAt)
+                .HasDatabaseName("IX_User_DeletedAt");
         }
     }
 }

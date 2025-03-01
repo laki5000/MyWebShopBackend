@@ -36,6 +36,7 @@ namespace AuthService.Services
         public async Task<ApiResponseDto<string>> CreateAsync(CreateAspNetUserDto createAspNetUserDto)
         {
             var normalizedUsername = createAspNetUserDto.UserName.Normalize();
+            var normalizedEmail = createAspNetUserDto.Email.Normalize();
 
             var existsByUserName = await _aspNetUserRepository.ExistsByNormalizedUserNameAsync(normalizedUsername);
             if (existsByUserName)
@@ -50,6 +51,7 @@ namespace AuthService.Services
 
             entity.PasswordHash = _passwordHasher.HashPassword(entity, createAspNetUserDto.Password);
             entity.NormalizedUserName = normalizedUsername;
+            entity.NormalizedEmail = normalizedEmail;
 
             entity = await _aspNetUserRepository.AddAsync(entity);
 

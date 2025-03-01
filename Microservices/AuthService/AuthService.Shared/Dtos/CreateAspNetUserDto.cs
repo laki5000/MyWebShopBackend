@@ -1,8 +1,7 @@
 ﻿namespace AuthService.Shared.Dtos
 {
-    public class CreateAspNetUserDto
+    public class CreateAspNetUserDto : LoginAspNetUserDto
     {
-        public required string UserName { get; set; }
-        public required string Password { get; set; }
+        public required string Email { get; set; }
     }
 }

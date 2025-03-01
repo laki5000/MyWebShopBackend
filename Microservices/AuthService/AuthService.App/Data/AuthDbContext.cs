@@ -13,6 +13,10 @@ namespace AuthService.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AspNetUser>()
+                .HasIndex(u => u.DeletedAt)
+                .HasDatabaseName("IX_AspNetUser_DeletedAt");
         }
     }
 }

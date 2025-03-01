@@ -53,6 +53,9 @@ namespace UserService.App.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt")
+                        .HasDatabaseName("IX_User_DeletedAt");
+
                     b.ToTable("Users");
                 });
 #pragma warning restore 612, 618

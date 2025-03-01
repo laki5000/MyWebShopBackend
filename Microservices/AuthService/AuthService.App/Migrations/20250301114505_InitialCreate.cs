@@ -195,6 +195,11 @@ namespace AuthService.App.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUser_DeletedAt",
+                table: "AspNetUsers",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
