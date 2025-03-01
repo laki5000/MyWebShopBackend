@@ -1,4 +1,5 @@
-﻿using AuthService.Shared.Interfaces.Communication.Kafka;
+﻿using AuthService.Shared.Enums.AuthService.Shared.Communication.Kafka;
+using AuthService.Shared.Interfaces.Communication.Kafka;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -44,7 +45,7 @@ namespace AuthService.Shared.Communication.Kafka
                     Value = userId
                 };
 
-                var topic = AuthServiceKafkaTopics.AspNetUserForceDelete;
+                var topic = AuthServiceKafkaTopic.AspNetUserForceDelete.ToString();
                 var deliveryResult = await _producer.ProduceAsync(topic, message);
 
                 _logger.LogInformation("Successfully sent '{Topic}' message to Kafka for user ID: {UserId}", topic, userId);

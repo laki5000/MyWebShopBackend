@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuthService.App.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250301114505_InitialCreate")]
+    [Migration("20250301175849_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -96,9 +96,6 @@ namespace AuthService.App.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt")
-                        .HasDatabaseName("IX_AspNetUser_DeletedAt");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");

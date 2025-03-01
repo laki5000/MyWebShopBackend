@@ -94,9 +94,6 @@ namespace AuthService.App.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeletedAt")
-                        .HasDatabaseName("IX_AspNetUser_DeletedAt");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 

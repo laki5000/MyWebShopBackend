@@ -25,7 +25,7 @@ namespace UserService.App.Services
         {
             if (createUserDto.Id == null) 
             {
-                var errorResult = ApiResponseDto.Fail(ErrorCodeEnum.UNKNOWN_ERROR);
+                var errorResult = ApiResponseDto.Fail(ErrorCode.UNKNOWN_ERROR);
                 _logger.LogError("User creation failed. Id cannot be null");
 
                 return errorResult;

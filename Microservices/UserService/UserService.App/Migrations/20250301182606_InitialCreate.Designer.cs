@@ -12,7 +12,7 @@ using UserService.App.Data;
 namespace UserService.App.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250301114534_InitialCreate")]
+    [Migration("20250301182606_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,9 +55,6 @@ namespace UserService.App.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt")
-                        .HasDatabaseName("IX_User_DeletedAt");
 
                     b.ToTable("Users");
                 });

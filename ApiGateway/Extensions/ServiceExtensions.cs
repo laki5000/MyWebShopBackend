@@ -71,9 +71,9 @@ namespace ApiGateway.Extensions
                 .AddJwtBearer(options =>
                 {
                     var jwtSettings = configuration.GetSection("JwtSettings");
-                    var secret = jwtSettings["Secret"] ?? throw new ArgumentNullException("JwtSettings:Secret");
-                    var issuer = jwtSettings["Issuer"] ?? throw new ArgumentNullException("JwtSettings:Issuer");
-                    var audience = jwtSettings["Audience"] ?? throw new ArgumentNullException("JwtSettings:Audience");
+                    var secret = jwtSettings["Secret"]!;
+                    var issuer = jwtSettings["Issuer"]!;
+                    var audience = jwtSettings["Audience"]!;
 
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;

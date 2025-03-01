@@ -28,7 +28,7 @@ namespace ApiGateway.Middlewares
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
 
-                var response = ApiResponseDto.Fail(ErrorCodeEnum.UNKNOWN_ERROR);
+                var response = ApiResponseDto.Fail(ErrorCode.UNKNOWN_ERROR);
                 var jsonOptions = new JsonSerializerOptions
                 {
                     Converters = { new JsonStringEnumConverter() }

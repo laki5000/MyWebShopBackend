@@ -3,6 +3,8 @@ using Confluent.Kafka;
 using AuthService.Configurations;
 using Microsoft.Extensions.Options;
 using AuthService.Shared.Communication.Kafka;
+using AuthService.Shared.Enums;
+using AuthService.Shared.Enums.AuthService.Shared.Communication.Kafka;
 
 namespace AuthService.App.Communication.Kafka
 {
@@ -10,11 +12,6 @@ namespace AuthService.App.Communication.Kafka
     {
         private readonly ILogger<KafkaTopicManager> _logger;
         private readonly IAdminClient _adminClient;
-
-        private readonly List<string> _topicsToCreate = new List<string>
-        {
-            AuthServiceKafkaTopics.AspNetUserForceDelete,
-        };
 
         public KafkaTopicManager(ILogger<KafkaTopicManager> logger, IOptions<AppSettings> appSettings)
         {
@@ -35,8 +32,9 @@ namespace AuthService.App.Communication.Kafka
 
         public async Task EnsureTopicsExistAsync()
         {
-            foreach (var topicName in _topicsToCreate)
+            foreach (AuthServiceKafkaTopic topic in Enum.GetValues(typeof(AuthServiceKafkaTopic)))
             {
+                var topicName = topic.ToString();
                 var exists = TopicExists(topicName);
                 if (!exists)
                 {

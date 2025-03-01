@@ -29,11 +29,6 @@ namespace UserService.App.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_DeletedAt",
-                table: "Users",
-                column: "DeletedAt");
         }
 
         /// <inheritdoc />

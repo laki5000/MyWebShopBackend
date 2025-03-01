@@ -8,15 +8,9 @@ namespace AuthService.Data
     {
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) { }
 
-        public DbSet<AspNetUser> AspNetUsers { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<AspNetUser>()
-                .HasIndex(u => u.DeletedAt)
-                .HasDatabaseName("IX_AspNetUser_DeletedAt");
         }
     }
 }

@@ -14,17 +14,17 @@ using Shared.Enums;
 namespace ApiGateway.Controllers
 {
     [ApiController]
-    [Route("api/v1/gw_auth/user")]
-    public class AuthController : BaseController
+    [Route("api/v1/user")]
+    public class UserController : BaseController
     {
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger<UserController> _logger;
         private readonly JwtSettings _jwtSettings;
         private readonly IAuthServiceUserClientAdapter _authServiceUserClientAdapter;
         private readonly IUserServiceUserClientAdapter _userServiceUserClientAdapter;
         private readonly IAuthServiceKafkaProducer _authServiceKafkaProducer;
 
-        public AuthController(
-            ILogger<AuthController> logger,
+        public UserController(
+            ILogger<UserController> logger,
             IOptions<AppSettings> appSettings,
             IAuthServiceUserClientAdapter authServiceUserClientAdapter,
             IUserServiceUserClientAdapter userServiceUserClientAdapter,
@@ -69,7 +69,7 @@ namespace ApiGateway.Controllers
                 _logger.LogError(ex, "An unexpected error occurred during user registration.");
 
                 await _authServiceKafkaProducer.ForceDeleteAspNetUserAsync(userId);
-                var response = ApiResponseDto.Fail(ErrorCodeEnum.UNKNOWN_ERROR);
+                var response = ApiResponseDto.Fail(ErrorCode.UNKNOWN_ERROR);
 
                 return new ObjectResult(response)
                 {

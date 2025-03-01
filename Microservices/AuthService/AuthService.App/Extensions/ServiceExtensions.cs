@@ -1,11 +1,9 @@
 ﻿using AuthService.App.Communication.Kafka;
 using AuthService.Configurations;
 using AuthService.Data;
-using AuthService.Interfaces.Repositories;
 using AuthService.Interfaces.Services;
 using AuthService.Mapping;
 using AuthService.Models;
-using AuthService.Repositories;
 using AuthService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,15 +25,22 @@ namespace AuthService.App.Extensions
                 options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
 
             // Identity
-            services.AddIdentityCore<AspNetUser>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<AuthDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<AspNetUser>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 0;
+                options.Password.RequiredUniqueChars = 0;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AuthDbContext>()
+            .AddDefaultTokenProviders();
 
             // Services & repositories
             services.AddScoped<IAspNetUserService, AspNetUserServiceImpl>();
             services.AddSingleton<IJwtService, JwtServiceImpl>();
-            services.AddScoped<IAspNetUserRepository, AspNetUserRepositoryImpl>();
 
             // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);

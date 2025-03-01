@@ -21,7 +21,7 @@ namespace AuthService.Services
             _jwtSettings = appSettings.Value.JwtSettings;
         }
 
-        public string GenerateToken(AspNetUser user)
+        public string GenerateToken(AspNetUser user, IList<string> roles)
         {
             if (user.UserName is null)
             {
@@ -29,7 +29,7 @@ namespace AuthService.Services
                 throw new ArgumentNullException(nameof(user.UserName));
             }
 
-            var claims = GetClaims(user);
+            var claims = GetClaims(user, roles);
             var credentials = GetSigningCredentials();
             var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes);
 
@@ -46,13 +46,20 @@ namespace AuthService.Services
             return tokenStr;
         }
 
-        private Claim[] GetClaims(AspNetUser user)
+        private Claim[] GetClaims(AspNetUser user, IList<string> roles)
         {
-            return
-            [
+            var claims = new List<Claim>
+            {
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
-            ];
+            };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            return claims.ToArray();
         }
 
         private SigningCredentials GetSigningCredentials()

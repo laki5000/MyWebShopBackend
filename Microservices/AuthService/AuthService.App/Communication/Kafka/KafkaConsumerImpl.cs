@@ -1,6 +1,7 @@
 ﻿using AuthService.Configurations;
 using AuthService.Interfaces.Services;
 using AuthService.Shared.Communication.Kafka;
+using AuthService.Shared.Enums.AuthService.Shared.Communication.Kafka;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 
@@ -11,11 +12,6 @@ namespace AuthService.App.Communication.Kafka
         private readonly ILogger<KafkaConsumerImpl> _logger;
         private readonly IConsumer<string, string> _consumer;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        private readonly List<string> _topics = new List<string>
-        {
-            AuthServiceKafkaTopics.AspNetUserForceDelete,
-        };
 
         private readonly string _authServiceGroup = "auth-service-group";
 
@@ -47,7 +43,11 @@ namespace AuthService.App.Communication.Kafka
             };
 
             var consumer = new ConsumerBuilder<string, string>(config).Build();
-            consumer.Subscribe(_topics);
+            var topics = Enum.GetValues(typeof(AuthServiceKafkaTopic))
+                 .Cast<AuthServiceKafkaTopic>()
+                 .Select(topic => topic.ToString());
+
+            consumer.Subscribe(topics);
 
             return consumer;
         }
@@ -69,7 +69,7 @@ namespace AuthService.App.Communication.Kafka
                                 continue;
                             }
 
-                            _ = Task.Run(() => ProcessResultAsync(consumeResult), stoppingToken);
+                            Task.Run(() => ProcessResultAsync(consumeResult), stoppingToken);
                         }
                         catch (ConsumeException ex)
                         {
@@ -92,7 +92,7 @@ namespace AuthService.App.Communication.Kafka
                 {
                     switch (result.Topic)
                     {
-                        case AuthServiceKafkaTopics.AspNetUserForceDelete:
+                        case var topic when topic == AuthServiceKafkaTopic.AspNetUserForceDelete.ToString():
                             await HandleAspNetUserForceDeleteAsync(scope, result);
                             break;
                     }
