@@ -8,31 +8,38 @@ namespace ApiGateway.Communication.Grpc
 {
     public class AuthServiceUserClientAdapterImpl : IAuthServiceUserClientAdapter
     {
+        private readonly ILogger<AuthServiceUserClientAdapterImpl> _logger;
         private readonly AuthServiceUser.AuthServiceUserClient _authServiceUserClient;
-
         private readonly IMapper _mapper;
 
-        public AuthServiceUserClientAdapterImpl(AuthServiceUser.AuthServiceUserClient authServiceUserClient, IMapper mapper)
+        public AuthServiceUserClientAdapterImpl(ILogger<AuthServiceUserClientAdapterImpl> logger, AuthServiceUser.AuthServiceUserClient authServiceUserClient, IMapper mapper)
         {
-            _authServiceUserClient = authServiceUserClient ?? throw new ArgumentNullException(nameof(authServiceUserClient));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger;
+            _authServiceUserClient = authServiceUserClient;
+            _mapper = mapper;
         }
 
-        public async Task<ApiResponseDto<AspNetUserDto>> CreateAsync(CreateAspNetUserDto request)
+        public async Task<ApiResponseDto<string>> CreateAsync(CreateAspNetUserDto request)
         {
+            _logger.LogInformation("Create user request sent for UserName: {UserName}", request.UserName);
+
             var grpcCreateAspNetUserDto = _mapper.Map<GrpcCreateAspNetUserDto>(request);
             var result = await _authServiceUserClient.CreateAsync(grpcCreateAspNetUserDto);
-            var response = _mapper.Map<ApiResponseDto<AspNetUserDto>>(result);
+            var response = _mapper.Map<ApiResponseDto<string>>(result);
 
+            _logger.LogInformation("User created successfully with ID: {UserId}", response.Data);
             return response;
         }
 
         public async Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto request)
         {
+            _logger.LogInformation("Login attempt sent for UserName: {UserName}", request.UserName);
+
             var grpcLoginAspNetUserDto = _mapper.Map<GrpcLoginAspNetUserDto>(request);
             var result = await _authServiceUserClient.LoginAsync(grpcLoginAspNetUserDto);
             var response = _mapper.Map<ApiResponseDto<string>>(result);
 
+            _logger.LogInformation("User logged in successfully: {UserName}", request.UserName);
             return response;
         }
     }

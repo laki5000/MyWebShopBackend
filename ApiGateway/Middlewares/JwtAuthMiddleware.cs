@@ -8,11 +8,13 @@ namespace ApiGateway.Middleware
 {
     public class JwtAuthMiddleware
     {
+        private readonly ILogger<JwtAuthMiddleware> _logger;
         private readonly RequestDelegate _next;
 
-        public JwtAuthMiddleware(RequestDelegate next)
+        public JwtAuthMiddleware(ILogger<JwtAuthMiddleware> logger, RequestDelegate next)
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _logger = logger;
+            _next = next;
         }
 
         public async Task Invoke(HttpContext context)
@@ -28,6 +30,8 @@ namespace ApiGateway.Middleware
 
             if (context.Response.StatusCode == StatusCodes.Status401Unauthorized && !context.Response.HasStarted)
             {
+                _logger.LogWarning("Unauthorized access attempt detected.");
+
                 context.Response.ContentType = "application/json";
 
                 var response = ApiResponseDto.Fail(ErrorCodeEnum.INVALID_TOKEN);

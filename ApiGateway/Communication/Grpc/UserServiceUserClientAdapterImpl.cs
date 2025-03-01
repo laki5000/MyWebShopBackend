@@ -8,22 +8,26 @@ namespace ApiGateway.Communication.Grpc
 {
     public class UserServiceUserClientAdapterImpl : IUserServiceUserClientAdapter
     {
-        private readonly UserServiceUser.UserServiceUserClient _userServiceClient;
-
+        private readonly ILogger<UserServiceUserClientAdapterImpl> _logger;
+        private readonly UserServiceUser.UserServiceUserClient _userServiceUserClient;
         private readonly IMapper _mapper;
 
-        public UserServiceUserClientAdapterImpl(UserServiceUser.UserServiceUserClient userServiceClient, IMapper mapper)
+        public UserServiceUserClientAdapterImpl(ILogger<UserServiceUserClientAdapterImpl> logger, UserServiceUser.UserServiceUserClient userServiceClient, IMapper mapper)
         {
-            _userServiceClient = userServiceClient ?? throw new ArgumentNullException(nameof(userServiceClient));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger;
+            _userServiceUserClient = userServiceClient;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponseDto> CreateAsync(CreateUserDto request)
         {
+            _logger.LogInformation("Create user request sent for ID: {UserId}", request.Id);
+
             var grpcCreateUserDto = _mapper.Map<GrpcCreateUserDto>(request);
-            var result = await _userServiceClient.CreateAsync(grpcCreateUserDto);
+            var result = await _userServiceUserClient.CreateAsync(grpcCreateUserDto);
             var response = _mapper.Map<ApiResponseDto>(result);
 
+            _logger.LogInformation("User created successfully with ID: {UserId}", request.Id);
             return response;
         }
     }
