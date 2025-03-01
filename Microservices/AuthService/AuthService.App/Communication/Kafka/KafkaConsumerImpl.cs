@@ -52,33 +52,36 @@ namespace AuthService.App.Communication.Kafka
             return consumer;
         }
 
-        private async Task StartConsumerLoop(CancellationToken stoppingToken)
+        private Task StartConsumerLoop(CancellationToken stoppingToken)
         {
-            try
+            return Task.Run(() =>
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
-                    try
+                    while (!stoppingToken.IsCancellationRequested)
                     {
-                        var consumeResult = _consumer.Consume(stoppingToken);
-
-                        if (consumeResult.IsPartitionEOF)
+                        try
                         {
-                            continue;
-                        }
+                            var consumeResult = _consumer.Consume(stoppingToken);
 
-                        await ProcessResultAsync(consumeResult);
-                    }
-                    catch (ConsumeException ex)
-                    {
-                        _logger.LogError($"Error consuming message: {ex.Error.Reason}");
+                            if (consumeResult.IsPartitionEOF)
+                            {
+                                continue;
+                            }
+
+                            _ = Task.Run(() => ProcessResultAsync(consumeResult), stoppingToken);
+                        }
+                        catch (ConsumeException ex)
+                        {
+                            _logger.LogError($"Error consuming message: {ex.Error.Reason}");
+                        }
                     }
                 }
-            }
-            finally
-            {
-                _consumer.Close();
-            }
+                finally
+                {
+                    _consumer.Close();
+                }
+            }, stoppingToken);
         }
 
         private async Task ProcessResultAsync(ConsumeResult<string, string> result)
