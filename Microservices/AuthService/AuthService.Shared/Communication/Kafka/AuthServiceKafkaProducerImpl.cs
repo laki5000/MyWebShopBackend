@@ -28,8 +28,7 @@ namespace AuthService.Shared.Communication.Kafka
             return new ProducerBuilder<string, string>(config).Build();
         }
 
-
-        public async Task ForceDeleteAspNetUserAsync(string userId)
+        private async Task SendKafkaMessageAsync(AuthServiceKafkaTopic topic, string userId)
         {
             if (string.IsNullOrEmpty(userId))
             {
@@ -45,16 +44,22 @@ namespace AuthService.Shared.Communication.Kafka
                     Value = userId
                 };
 
-                var topic = AuthServiceKafkaTopic.AspNetUserForceDelete.ToString();
-                var deliveryResult = await _producer.ProduceAsync(topic, message);
+                var topicName = topic.ToString();
+                var deliveryResult = await _producer.ProduceAsync(topicName, message);
 
-                _logger.LogInformation("Successfully sent '{Topic}' message to Kafka for user ID: {UserId}", topic, userId);
+                _logger.LogInformation("Successfully sent '{Topic}' message to Kafka for user ID: {UserId}", topicName, userId);
             }
             catch (ProduceException<string, string> ex)
             {
-                _logger.LogError(ex, "Error producing message to Kafka: {Topic}", userId);
+                _logger.LogError(ex, "Error producing message to Kafka: {Topic}", topic);
                 throw new Exception("Error producing message to Kafka", ex);
             }
         }
+
+        public async Task ForceDeleteAspNetUserAsync(string userId) =>
+            await SendKafkaMessageAsync(AuthServiceKafkaTopic.ASPNETUSER_FORCE_DELETE, userId);
+
+        public async Task CompleteCreationAspNetUserAsync(string userId) =>
+            await SendKafkaMessageAsync(AuthServiceKafkaTopic.ASPNETUSER_COMPLETE_CREATION, userId);
     }
 }

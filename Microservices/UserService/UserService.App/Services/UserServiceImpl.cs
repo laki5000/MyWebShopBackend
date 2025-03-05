@@ -23,7 +23,7 @@ namespace UserService.App.Services
 
         public async Task<ApiResponseDto> CreateAsync(CreateUserDto createUserDto)
         {
-            if (createUserDto.Id == null) 
+            if (createUserDto.Id == null)
             {
                 var errorResult = ApiResponseDto.Fail(ErrorCode.UNKNOWN_ERROR);
                 _logger.LogError("User creation failed. Id cannot be null");
@@ -32,6 +32,7 @@ namespace UserService.App.Services
             }
 
             var entity = _mapper.Map<UserEntity>(createUserDto);
+            entity.status = ObjectStatus.CREATED;
             await _userRepository.AddAsync(entity);
 
             var result = ApiResponseDto.Success();

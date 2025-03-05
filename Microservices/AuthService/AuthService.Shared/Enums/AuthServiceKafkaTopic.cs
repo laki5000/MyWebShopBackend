@@ -4,7 +4,8 @@
     {
         public enum AuthServiceKafkaTopic
         {
-            AspNetUserForceDelete
+            ASPNETUSER_FORCE_DELETE,
+            ASPNETUSER_COMPLETE_CREATION
         }
     }
 

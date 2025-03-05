@@ -3,5 +3,6 @@
     public interface IAuthServiceKafkaProducer
     {
         Task ForceDeleteAspNetUserAsync(string userId);
+        Task CompleteCreationAspNetUserAsync(string userId);
     }
 }

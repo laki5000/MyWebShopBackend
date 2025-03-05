@@ -50,6 +50,7 @@ namespace AuthService.Services
             }
 
             var entity = _mapper.Map<AspNetUser>(createAspNetUserDto);
+            entity.status = ObjectStatus.PENDING;
 
             var createResult = await _userManager.CreateAsync(entity, createAspNetUserDto.Password);
             if (!createResult.Succeeded)
@@ -74,7 +75,7 @@ namespace AuthService.Services
         public async Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto loginAspNetUserDto)
         {
             var entity = await _userManager.FindByNameAsync(loginAspNetUserDto.UserName);
-            if (entity is null || entity.DeletedAt is not null)
+            if (entity is null || entity.status is not ObjectStatus.CREATED)
             {
                 _logger.LogError("Login failed: Username {UserName} not found", loginAspNetUserDto.UserName);
 

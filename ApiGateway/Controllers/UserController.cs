@@ -64,7 +64,7 @@ namespace ApiGateway.Controllers
                     return result;
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected error occurred during user registration.");
 
@@ -77,6 +77,7 @@ namespace ApiGateway.Controllers
                 };
             }
 
+            await _authServiceKafkaProducer.CompleteCreationAspNetUserAsync(userId);
             return NoContent();
         }
 
@@ -84,7 +85,8 @@ namespace ApiGateway.Controllers
         public async Task<IActionResult> Login([FromBody] LoginAspNetUserDto loginAspNetUserDto)
         {
             var authServiceResult = await _authServiceUserClientAdapter.LoginAsync(loginAspNetUserDto);
-            if (!authServiceResult.IsSuccess) {
+            if (!authServiceResult.IsSuccess)
+            {
                 _logger.LogWarning("Login failed for user {UserName}. Error: {Error}", loginAspNetUserDto.UserName, authServiceResult.ErrorCode);
                 var result = GetObjectResult(authServiceResult);
                 return result;
