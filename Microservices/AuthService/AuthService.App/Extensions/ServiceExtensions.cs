@@ -1,4 +1,6 @@
 ﻿using AuthService.App.Communication.Kafka;
+using AuthService.App.Interfaces.Services;
+using AuthService.App.Services;
 using AuthService.Configurations;
 using AuthService.Data;
 using AuthService.Interfaces.Services;
@@ -40,6 +42,7 @@ namespace AuthService.App.Extensions
 
             // Services & repositories
             services.AddScoped<IAspNetUserService, AspNetUserServiceImpl>();
+            services.AddScoped<IRoleService, RoleServiceImpl>();
             services.AddSingleton<IJwtService, JwtServiceImpl>();
 
             // AutoMapper

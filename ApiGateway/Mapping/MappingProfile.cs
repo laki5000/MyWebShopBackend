@@ -15,6 +15,7 @@ namespace ApiGateway.Mapping
             CreateMap<LoginAspNetUserDto, GrpcLoginAspNetUserDto>();
             CreateMap<CreateUserDto, GrpcCreateUserDto>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
+            CreateMap<GrpcStringListResponseDto, ApiResponseDto<List<string>>>();
             CreateMap<GrpcResponseDto, ApiResponseDto>();
         }
     }

@@ -27,6 +27,7 @@ namespace ApiGateway.Extensions
 
             // Services
             services.AddScoped<IAuthServiceUserClientAdapter, AuthServiceUserClientAdapterImpl>();
+            services.AddScoped<IAuthServiceRoleClientAdapter, AuthServiceRoleClientAdapterImpl>();
             services.AddScoped<IUserServiceUserClientAdapter, UserServiceUserClientAdapterImpl>();
 
             // Controller settings
@@ -41,6 +42,19 @@ namespace ApiGateway.Extensions
 
             // Grpc
             services.AddGrpcClient<AuthServiceUser.AuthServiceUserClient>(options =>
+            {
+                options.Address = new Uri("http://authservice:5000");
+            })
+            .ConfigureChannel(options =>
+            {
+                options.Credentials = ChannelCredentials.Insecure;
+                options.HttpHandler = new SocketsHttpHandler()
+                {
+                    EnableMultipleHttp2Connections = true
+                };
+            });
+
+            services.AddGrpcClient<AuthServiceRole.AuthServiceRoleClient>(options =>
             {
                 options.Address = new Uri("http://authservice:5000");
             })

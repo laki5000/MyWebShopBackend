@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Protobuf Include="..\Microservices\AuthService\AuthService.Shared\Protos\auth_service_user.proto" GrpcServices="Client" />
+	  <Protobuf Include="..\Microservices\AuthService\AuthService.Shared\Protos\auth_service_role.proto" GrpcServices="Client" />
 	<Protobuf Include="..\Microservices\UserService\UserService.Shared\Protos\user_service_user.proto" GrpcServices="Client" />
   </ItemGroup>
 

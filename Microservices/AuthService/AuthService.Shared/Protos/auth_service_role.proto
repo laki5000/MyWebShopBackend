@@ -1,0 +1,17 @@
+﻿syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+service AuthServiceRole {
+    rpc GetAll (google.protobuf.Empty) returns (GrpcStringListResponseDto);
+}
+
+message GrpcStringListResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+    repeated string data = 3;
+}
+

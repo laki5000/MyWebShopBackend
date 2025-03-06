@@ -12,6 +12,7 @@ namespace AuthService.App.Extensions
         public static void ConfigureEndpoints(this WebApplication app)
         {
             app.MapGrpcService<AuthServiceUserImpl>();
+            app.MapGrpcService<AuthServiceRoleImpl>();
             app.MapHealthChecks("/health");
         }
 
