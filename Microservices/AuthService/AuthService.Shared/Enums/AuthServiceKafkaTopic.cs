@@ -8,5 +8,4 @@
             ASPNETUSER_COMPLETE_CREATION
         }
     }
-
 }

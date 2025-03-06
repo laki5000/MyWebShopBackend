@@ -127,7 +127,7 @@ namespace AuthService.App.Communication.Kafka
             {
                 var aspNetUserService = scope.ServiceProvider.GetRequiredService<IAspNetUserService>();
 
-                //todo 
+                await aspNetUserService.DeleteAsync(message, true);
 
                 LogProcessingResult(topic, message);
             }
@@ -146,7 +146,7 @@ namespace AuthService.App.Communication.Kafka
             {
                 var aspNetUserService = scope.ServiceProvider.GetRequiredService<IAspNetUserService>();
 
-                //todo 
+                await aspNetUserService.CompleteCreationAsync(message);
 
                 LogProcessingResult(topic, message);
             }

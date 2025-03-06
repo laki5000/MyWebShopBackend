@@ -50,7 +50,7 @@ namespace AuthService.Services
             }
 
             var entity = _mapper.Map<AspNetUser>(createAspNetUserDto);
-            entity.status = ObjectStatus.PENDING;
+            entity.Status = ObjectStatus.PENDING;
 
             var createResult = await _userManager.CreateAsync(entity, createAspNetUserDto.Password);
             if (!createResult.Succeeded)
@@ -75,7 +75,7 @@ namespace AuthService.Services
         public async Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto loginAspNetUserDto)
         {
             var entity = await _userManager.FindByNameAsync(loginAspNetUserDto.UserName);
-            if (entity is null || entity.status is not ObjectStatus.CREATED)
+            if (entity is null || entity.Status is not ObjectStatus.CREATED)
             {
                 _logger.LogError("Login failed: Username {UserName} not found", loginAspNetUserDto.UserName);
 
@@ -98,6 +98,56 @@ namespace AuthService.Services
             var successDto = ApiResponseDto<string>.Success(token);
 
             return successDto;
+        }
+
+        public async Task<ApiResponseDto> DeleteAsync(string userId, bool forceDelete = false)
+        {
+            var entity = await FindByIdAsync(userId);
+            if (entity is null)
+            {
+                var failDto = ApiResponseDto.Fail(ErrorCode.USER_NOT_FOUND);
+                return failDto;
+            }
+
+            if (forceDelete)
+            {
+                await _userManager.DeleteAsync(entity);
+            }
+            else
+            {
+                entity.DeletedAt = DateTime.UtcNow;
+                entity.Status = ObjectStatus.DELETED;
+            }
+
+            var successDto = ApiResponseDto.Success();
+            return successDto;
+        }
+
+        public async Task<ApiResponseDto> CompleteCreationAsync(string userId)
+        {
+            var entity = await FindByIdAsync(userId);
+            if (entity is null)
+            {
+                var failDto = ApiResponseDto.Fail(ErrorCode.USER_NOT_FOUND);
+                return failDto;
+            }
+
+            entity.Status = ObjectStatus.CREATED;
+            await _userManager.UpdateAsync(entity);
+
+            var successDto = ApiResponseDto.Success();
+            return successDto;
+        }
+
+        private async Task<AspNetUser?> FindByIdAsync(string userId)
+        {
+            var entity = await _userManager.FindByIdAsync(userId);
+            if (entity is null || entity.Status is ObjectStatus.DELETED)
+            {
+                _logger.LogError("User not found: {UserId}", userId);
+                return null;
+            }
+            return entity;
         }
     }
 }
