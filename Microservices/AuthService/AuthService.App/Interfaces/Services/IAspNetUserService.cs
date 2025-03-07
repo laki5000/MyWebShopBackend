@@ -8,6 +8,7 @@ namespace AuthService.Interfaces.Services
         Task<ApiResponseDto<string>> CreateAsync(CreateAspNetUserDto createAspNetUserDto);
         Task<ApiResponseDto<string>> LoginAsync(LoginAspNetUserDto loginAspNetUserDto);
         Task<ApiResponseDto> DeleteAsync(string userId, bool forceDelete);
-        Task<ApiResponseDto> CompleteCreationAsync(string userId);
+        Task CompleteCreationAsync(string userId);
+        Task<ApiResponseDto> ChangePasswordAsync(ChangeAspNetUserPasswordDto changeAspNetUserPasswordDto);
     }
 }

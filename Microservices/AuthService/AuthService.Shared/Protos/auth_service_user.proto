@@ -7,6 +7,7 @@ import "google/protobuf/wrappers.proto";
 service AuthServiceUser {
     rpc Create (GrpcCreateAspNetUserDto) returns (GrpcStringResponseDto);
     rpc Login (GrpcLoginAspNetUserDto) returns (GrpcStringResponseDto);
+    rpc ChangePassword (GrpcChangeAspNetUserPasswordDto) returns (GrpcResponseDto);
 }
 
 message GrpcCreateAspNetUserDto {
@@ -20,9 +21,20 @@ message GrpcLoginAspNetUserDto {
     string password = 2;
 }
 
+message GrpcChangeAspNetUserPasswordDto {
+    string user_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
 message GrpcStringResponseDto {
     bool is_success = 1;
     google.protobuf.Int32Value error_code = 2;
     google.protobuf.StringValue data = 3;
+}
+
+message GrpcResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
 }
 

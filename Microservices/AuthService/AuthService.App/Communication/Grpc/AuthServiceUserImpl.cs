@@ -42,5 +42,17 @@ namespace AuthService.App.Communication.Grpc
             _logger.LogInformation("User logged in successfully: {UserName}", request.UserName);
             return response;
         }
+
+        public override async Task<GrpcResponseDto> ChangePassword(GrpcChangeAspNetUserPasswordDto request, ServerCallContext context)
+        {
+            _logger.LogInformation("Change password request received for UserId: {UserId}", request.UserId);
+
+            var changeAspNetUserPasswordDto = _mapper.Map<ChangeAspNetUserPasswordDto>(request);
+            var result = await _aspNetUserService.ChangePasswordAsync(changeAspNetUserPasswordDto);
+            var response = _mapper.Map<GrpcResponseDto>(result);
+
+            _logger.LogInformation("Password changed successfully for UserId: {UserId}", request.UserId);
+            return response;
+        }
     }
 }

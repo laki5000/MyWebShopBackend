@@ -12,9 +12,11 @@ namespace AuthService.Mapping
         {
             CreateMap<GrpcCreateAspNetUserDto, CreateAspNetUserDto>();
             CreateMap<GrpcLoginAspNetUserDto, LoginAspNetUserDto>();
+            CreateMap<GrpcChangeAspNetUserPasswordDto, ChangeAspNetUserPasswordDto>();
             CreateMap<CreateAspNetUserDto, AspNetUser>();
             CreateMap<ApiResponseDto<string>, GrpcStringResponseDto>();
             CreateMap<ApiResponseDto<List<string>>, GrpcStringListResponseDto>();
+            CreateMap<ApiResponseDto, GrpcResponseDto>();
         }
     }
 }

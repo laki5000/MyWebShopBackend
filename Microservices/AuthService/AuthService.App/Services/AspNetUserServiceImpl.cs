@@ -34,7 +34,7 @@ namespace AuthService.Services
             var existingByUserName = await _userManager.FindByNameAsync(createAspNetUserDto.UserName);
             if (existingByUserName is not null)
             {
-                _logger.LogError("Username already exists: {UserName}", createAspNetUserDto.UserName);
+                _logger.LogError("User creation failed: Username {Username} already exists", createAspNetUserDto.UserName);
 
                 var failDto = ApiResponseDto<string>.Fail(ErrorCode.USERNAME_ALREADY_EXISTS);
                 return failDto;
@@ -43,7 +43,8 @@ namespace AuthService.Services
             var existingByEmail = await _userManager.FindByEmailAsync(createAspNetUserDto.Email);
             if (existingByEmail is not null)
             {
-                _logger.LogError("Email already exists: {Email}", createAspNetUserDto.Email);
+                _logger.LogError("User creation failed: Email {Email} already exists", createAspNetUserDto.Email);
+
 
                 var failDto = ApiResponseDto<string>.Fail(ErrorCode.EMAIL_ALREADY_EXISTS);
                 return failDto;
@@ -105,13 +106,20 @@ namespace AuthService.Services
             var entity = await FindByIdAsync(userId);
             if (entity is null)
             {
+                _logger.LogError("Delete failed: User not found with {Id}", userId);
                 var failDto = ApiResponseDto.Fail(ErrorCode.USER_NOT_FOUND);
                 return failDto;
             }
 
             if (forceDelete)
             {
-                await _userManager.DeleteAsync(entity);
+                var deleteResult = await _userManager.DeleteAsync(entity);
+                if (!deleteResult.Succeeded)
+                {
+                    _logger.LogError("Delete failed: {Errors}", string.Join(", ", deleteResult.Errors.Select(e => e.Description)));
+                    var failDto = ApiResponseDto.Fail(ErrorCode.USER_DELETE_FAILED);
+                    return failDto;
+                }
             }
             else
             {
@@ -123,17 +131,67 @@ namespace AuthService.Services
             return successDto;
         }
 
-        public async Task<ApiResponseDto> CompleteCreationAsync(string userId)
+        public async Task CompleteCreationAsync(string userId)
         {
             var entity = await FindByIdAsync(userId);
             if (entity is null)
             {
+                _logger.LogError("Complete creation failed: User not found with {Id}", userId);
+                return;
+            }
+
+            entity.Status = ObjectStatus.CREATED;
+            entity.UpdatedAt = DateTime.UtcNow;
+            var updateResult = await _userManager.UpdateAsync(entity);
+            if (!updateResult.Succeeded)
+            {
+                _logger.LogError("Complete creation failed: {Errors}", string.Join(", ", updateResult.Errors.Select(e => e.Description)));
+            }
+        }
+
+        public async Task<ApiResponseDto> ChangePasswordAsync(ChangeAspNetUserPasswordDto changeAspNetUserPasswordDto)
+        {
+            var entity = await FindByIdAsync(changeAspNetUserPasswordDto.UserId);
+            if (entity is null)
+            {
+                _logger.LogError("Password change failed: User not found with {Id}", changeAspNetUserPasswordDto.UserId);
                 var failDto = ApiResponseDto.Fail(ErrorCode.USER_NOT_FOUND);
                 return failDto;
             }
 
-            entity.Status = ObjectStatus.CREATED;
-            await _userManager.UpdateAsync(entity);
+            var passwordCheckResult = await _userManager.CheckPasswordAsync(entity, changeAspNetUserPasswordDto.OldPassword);
+            if (!passwordCheckResult)
+            {
+                _logger.LogError("Password change failed: Invalid password for user {UserName}", entity.UserName);
+
+                var failDto = ApiResponseDto<string>.Fail(ErrorCode.PASSWORD_IS_WRONG);
+                return failDto;
+            }
+
+            if (changeAspNetUserPasswordDto.OldPassword == changeAspNetUserPasswordDto.NewPassword)
+            {
+                _logger.LogError("Password change failed: The new password cannot be the same as the old password");
+
+                var failDto = ApiResponseDto<string>.Fail(ErrorCode.PASSWORD_SAME_AS_OLD);
+                return failDto;
+            }
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(entity, changeAspNetUserPasswordDto.OldPassword, changeAspNetUserPasswordDto.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                _logger.LogError("Password change failed: {Errors}", string.Join(", ", changePasswordResult.Errors.Select(e => e.Description)));
+                var failDto = ApiResponseDto.Fail(ErrorCode.USER_UPDATE_FAILED);
+                return failDto;
+            }
+
+            entity.UpdatedAt = DateTime.UtcNow;
+            var updateResult = await _userManager.UpdateAsync(entity);
+            if (!updateResult.Succeeded)
+            {
+                _logger.LogError("Password change failed: {Errors}", string.Join(", ", updateResult.Errors.Select(e => e.Description)));
+                var failDto = ApiResponseDto.Fail(ErrorCode.USER_UPDATE_FAILED);
+                return failDto;
+            }
 
             var successDto = ApiResponseDto.Success();
             return successDto;
@@ -144,7 +202,6 @@ namespace AuthService.Services
             var entity = await _userManager.FindByIdAsync(userId);
             if (entity is null || entity.Status is ObjectStatus.DELETED)
             {
-                _logger.LogError("User not found: {UserId}", userId);
                 return null;
             }
             return entity;

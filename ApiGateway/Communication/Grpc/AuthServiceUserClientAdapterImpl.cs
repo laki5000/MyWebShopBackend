@@ -42,5 +42,17 @@ namespace ApiGateway.Communication.Grpc
             _logger.LogInformation("User logged in successfully: {UserName}", request.UserName);
             return response;
         }
+
+        public async Task<ApiResponseDto> ChangePasswordAsync(ChangeAspNetUserPasswordDto request)
+        {
+            _logger.LogInformation("Change password request sent for UserId: {UserId}", request.UserId);
+
+            var grpcChangeAspNetUserPasswordDto = _mapper.Map<GrpcChangeAspNetUserPasswordDto>(request);
+            var result = await _authServiceUserClient.ChangePasswordAsync(grpcChangeAspNetUserPasswordDto);
+            var response = _mapper.Map<ApiResponseDto>(result);
+
+            _logger.LogInformation("Password changed successfully for UserId: {UserId}", request.UserId);
+            return response;
+        }
     }
 }

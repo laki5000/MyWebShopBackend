@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Shared.Configurations;
 using Shared.Dtos;
 using Shared.Enums;
+using System.Security.Claims;
 
 namespace ApiGateway.Controllers
 {
@@ -110,6 +111,24 @@ namespace ApiGateway.Controllers
         public IActionResult Logout()
         {
             Response.Cookies.Delete(AuthConstants.ACCESS_TOKEN_COOKIE_NAME);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPatch("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangeAspNetUserPasswordDto changeAspNetUserPasswordDto)
+        {
+            var userId = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            changeAspNetUserPasswordDto.UserId = userId;
+
+            var result = await _authServiceUserClientAdapter.ChangePasswordAsync(changeAspNetUserPasswordDto);
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning("Failed to change password for user ID {UserId}. Error: {Error}", userId, result.ErrorCode);
+                var response = GetObjectResult(result);
+                return response;
+            }
 
             return NoContent();
         }
