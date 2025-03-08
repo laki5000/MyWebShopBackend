@@ -14,6 +14,9 @@
         EMAIL_ALREADY_EXISTS,
         PASSWORD_SAME_AS_OLD,
 
+        // Category-related Errors
+        CATEGORY_NOT_FOUND,
+
         // Authentication Errors
         USERNAME_OR_PASSWORD_IS_WRONG,
         PASSWORD_IS_WRONG,

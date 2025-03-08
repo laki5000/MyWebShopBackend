@@ -45,10 +45,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTPS_PORTS=8081
+      - JwtSettings__Secret=${JWT_SECRET}
     ports:
       - "8081:8081"
     volumes:
-      - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
+      - ./Microservices/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
       - ./Shared/Settings/appsettings.kafka.json:/app/appsettings.kafka.json:ro
     networks:
       - mynetwork
@@ -57,12 +58,13 @@ services:
     image: ${DOCKER_REGISTRY-}authservice
     build:
       context: .
-      dockerfile: Microservices/AuthService/AuthService.App/Dockerfile
+      dockerfile: Microservices/AuthService.App/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
+      - JwtSettings__Secret=${JWT_SECRET}
     volumes:
-      - ./Microservices/AuthService/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
+      - ./Microservices/AuthService.Shared/Settings/appsettings.jwt.json:/app/appsettings.jwt.json:ro
       - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro
       - ./Shared/Settings/appsettings.kafka.json:/app/appsettings.kafka.json:ro
     networks:
@@ -74,7 +76,22 @@ services:
     image: ${DOCKER_REGISTRY-}userservice
     build:
       context: .
-      dockerfile: Microservices/UserService/UserService.App/Dockerfile
+      dockerfile: Microservices/UserService.App/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=5000
+    volumes:
+      - ./Shared/Settings/appsettings.grpc.json:/app/appsettings.grpc.json:ro
+    networks:
+      - mynetwork
+    expose:
+      - "5000"
+
+  productservice:
+    image: ${DOCKER_REGISTRY-}productservice
+    build:
+      context: .
+      dockerfile: Microservices/ProductService.App/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
@@ -88,3 +105,4 @@ services:
 networks:
   mynetwork:
     driver: bridge
+

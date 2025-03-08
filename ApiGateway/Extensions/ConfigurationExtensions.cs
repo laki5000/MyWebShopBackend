@@ -6,7 +6,8 @@
         {
             builder.Configuration
                 .AddJsonFile("appsettings.jwt.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.kafka.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsettings.kafka.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
         }
     }
 }

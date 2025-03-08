@@ -4,7 +4,8 @@
     {
         PENDING,
         CREATED,
-        DELETED
+        DELETED,
+        AVAILABLE,
+        SOLD_OUT
     }
-
 }

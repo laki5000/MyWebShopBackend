@@ -6,7 +6,8 @@
       "serviceActions": {
         "apigateway": "StartDebugging",
         "authservice": "StartDebugging",
-        "userservice": "StartDebugging"
+        "userservice": "StartDebugging",
+        "productservice.app": "StartDebugging"
       }
     }
   }
