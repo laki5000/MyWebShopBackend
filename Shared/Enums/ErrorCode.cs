@@ -2,28 +2,28 @@
 {
     public enum ErrorCode
     {
-        // General Errors
         UNKNOWN_ERROR,
 
-        // User-related Errors
+        // General validation errors
+        NAME_ALREADY_EXISTS,
+        EMAIL_ALREADY_EXISTS,
+        USERNAME_ALREADY_EXISTS,
+        PASSWORD_SAME_AS_OLD,
+
+        // Authentication and authorization errors
+        INVALID_USERNAME_AND_PASSWORD,
+        INVALID_PASSWORD,
+        INVALID_TOKEN,
+        FORBIDDEN,
+        ROLE_ASSIGNMENT_FAILED,
+
+        // User-related errors
+        USER_NOT_FOUND,
         USER_CREATION_FAILED,
         USER_UPDATE_FAILED,
         USER_DELETE_FAILED,
-        USER_NOT_FOUND,
-        USERNAME_ALREADY_EXISTS,
-        EMAIL_ALREADY_EXISTS,
-        PASSWORD_SAME_AS_OLD,
 
-        // Category-related Errors
-        CATEGORY_NOT_FOUND,
-
-        // Authentication Errors
-        USERNAME_OR_PASSWORD_IS_WRONG,
-        PASSWORD_IS_WRONG,
-        INVALID_TOKEN,
-
-        // Authorization Errors
-        ROLE_ASSIGNMENT_FAILED,
-        FORBIDDEN
+        // Entity-related errors
+        CATEGORY_NOT_FOUND
     }
 }

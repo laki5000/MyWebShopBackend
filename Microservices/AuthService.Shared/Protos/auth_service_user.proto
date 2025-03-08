@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-package auth;
+package authservice.proto;
 
 import "google/protobuf/wrappers.proto";
 

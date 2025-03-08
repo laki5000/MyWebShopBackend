@@ -3,7 +3,7 @@ using UserService.App.Models;
 
 namespace UserService.App.Interfaces.Repositories
 {
-    public interface IUserRepository : IBasePgRepository<UserEntity>
+    public interface IUserRepository : IBasePgRepository<User>
     {
     }
 }

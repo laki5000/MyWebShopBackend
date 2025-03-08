@@ -10,7 +10,7 @@ namespace ApiGateway.BaseClasses.Controllers
         {
             { ErrorCode.USERNAME_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
             { ErrorCode.EMAIL_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
-            { ErrorCode.USERNAME_OR_PASSWORD_IS_WRONG, dto => new UnauthorizedObjectResult(dto) }
+            { ErrorCode.INVALID_USERNAME_AND_PASSWORD, dto => new UnauthorizedObjectResult(dto) }
         };
 
         protected static IActionResult GetObjectResult(ApiResponseDto apiResponseDto)

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
-using Shared.Dtos;
-using User;
+using Userservice.Proto;
 using UserService.App.Interfaces.Services;
 using UserService.Shared.Dtos;
 

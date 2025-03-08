@@ -80,7 +80,7 @@ namespace AuthService.Services
             {
                 _logger.LogError("Login failed: Username {UserName} not found", loginAspNetUserDto.UserName);
 
-                var failDto = ApiResponseDto<string>.Fail(ErrorCode.USERNAME_OR_PASSWORD_IS_WRONG);
+                var failDto = ApiResponseDto<string>.Fail(ErrorCode.INVALID_USERNAME_AND_PASSWORD);
                 return failDto;
             }
 
@@ -89,7 +89,7 @@ namespace AuthService.Services
             {
                 _logger.LogError("Login failed: Invalid password for user {UserName}", loginAspNetUserDto.UserName);
 
-                var failDto = ApiResponseDto<string>.Fail(ErrorCode.USERNAME_OR_PASSWORD_IS_WRONG);
+                var failDto = ApiResponseDto<string>.Fail(ErrorCode.INVALID_USERNAME_AND_PASSWORD);
                 return failDto;
             }
 
@@ -164,7 +164,7 @@ namespace AuthService.Services
             {
                 _logger.LogError("Password change failed: Invalid password for user {UserName}", entity.UserName);
 
-                var failDto = ApiResponseDto<string>.Fail(ErrorCode.PASSWORD_IS_WRONG);
+                var failDto = ApiResponseDto<string>.Fail(ErrorCode.INVALID_PASSWORD);
                 return failDto;
             }
 

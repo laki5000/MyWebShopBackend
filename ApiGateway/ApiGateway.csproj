@@ -24,14 +24,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microservices\AuthService.Shared\AuthService.Shared.csproj" />
+    <ProjectReference Include="..\Microservices\ProductService.Shared\ProductService.Shared.csproj" />
     <ProjectReference Include="..\Microservices\UserService.Shared\UserService.Shared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="..\Microservices\AuthService.Shared\Protos\auth_service_user.proto" GrpcServices="Client" />
-	  <Protobuf Include="..\Microservices\AuthService.Shared\Protos\auth_service_role.proto" GrpcServices="Client" />
+	<Protobuf Include="..\Microservices\AuthService.Shared\Protos\auth_service_role.proto" GrpcServices="Client" />
 	<Protobuf Include="..\Microservices\UserService.Shared\Protos\user_service_user.proto" GrpcServices="Client" />
+	<Protobuf Include="..\Microservices\ProductService.Shared\Protos\product_service_category.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

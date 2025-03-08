@@ -1,7 +1,7 @@
 ﻿using ApiGateway.Interfaces.Grpc;
 using AutoMapper;
 using Shared.Dtos;
-using User;
+using Userservice.Proto;
 using UserService.Shared.Dtos;
 
 namespace ApiGateway.Communication.Grpc

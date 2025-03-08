@@ -5,7 +5,7 @@ using UserService.App.Models;
 
 namespace UserService.App.Repositories
 {
-    public class UserRepositoryImpl : BasePgRepositoryImpl<UserEntity>, IUserRepository
+    public class UserRepositoryImpl : BasePgRepositoryImpl<User>, IUserRepository
     {
         protected new readonly UserDbContext _context;
 

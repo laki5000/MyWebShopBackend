@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProductService.App.Communication.Grpc;
 using ProductService.App.Data;
 
 namespace ProductService.App.Extensions
@@ -7,7 +8,7 @@ namespace ProductService.App.Extensions
     {
         public static void ConfigureEndpoints(this WebApplication app)
         {
-            //app.MapGrpcService<UserServiceUserImpl>();
+            app.MapGrpcService<ProductServiceCategoryImpl>();
             app.MapHealthChecks("/health");
         }
 

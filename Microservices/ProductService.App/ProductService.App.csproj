@@ -34,5 +34,9 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <Protobuf Include="..\ProductService.Shared\Protos\product_service_category.proto" GrpcServices="Server" />
+  </ItemGroup>
 
 </Project>

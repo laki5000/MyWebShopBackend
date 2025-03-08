@@ -31,7 +31,7 @@ namespace UserService.App.Services
                 return errorResult;
             }
 
-            var entity = _mapper.Map<UserEntity>(createUserDto);
+            var entity = _mapper.Map<User>(createUserDto);
             entity.Status = ObjectStatus.CREATED;
             await _userRepository.AddAsync(entity);
 

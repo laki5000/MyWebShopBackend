@@ -8,9 +8,10 @@ using Shared.Configurations;
 using System.Text.Json.Serialization;
 using System.Text;
 using ApiGateway.Mapping;
-using Auth;
-using User;
 using ApiGateway.Configurations;
+using Authservice.Proto;
+using Userservice.Proto;
+using Productservice.Proto;
 
 namespace ApiGateway.Extensions
 {
@@ -29,6 +30,7 @@ namespace ApiGateway.Extensions
             services.AddScoped<IAuthServiceUserClientAdapter, AuthServiceUserClientAdapterImpl>();
             services.AddScoped<IAuthServiceRoleClientAdapter, AuthServiceRoleClientAdapterImpl>();
             services.AddScoped<IUserServiceUserClientAdapter, UserServiceUserClientAdapterImpl>();
+            services.AddScoped<IProductServiceCategoryClientAdapter, ProductServiceCategoryClientAdapterImpl>();
 
             // Controller settings
             services.AddControllers()
@@ -70,6 +72,19 @@ namespace ApiGateway.Extensions
             services.AddGrpcClient<UserServiceUser.UserServiceUserClient>(options =>
             {
                 options.Address = new Uri("http://userservice:5000");
+            })
+            .ConfigureChannel(options =>
+            {
+                options.Credentials = ChannelCredentials.Insecure;
+                options.HttpHandler = new SocketsHttpHandler()
+                {
+                    EnableMultipleHttp2Connections = true
+                };
+            });
+
+            services.AddGrpcClient<ProductServiceCategory.ProductServiceCategoryClient>(options =>
+            {
+                options.Address = new Uri("http://productservice:5000");
             })
             .ConfigureChannel(options =>
             {

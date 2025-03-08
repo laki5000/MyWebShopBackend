@@ -1,4 +1,4 @@
-﻿using Auth;
+﻿using Authservice.Proto;
 using AuthService.Interfaces.Services;
 using AuthService.Shared.Dtos;
 using AutoMapper;

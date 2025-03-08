@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Shared.Dtos;
-using User;
+using Userservice.Proto;
 using UserService.App.Models;
 using UserService.Shared.Dtos;
 
@@ -11,7 +11,7 @@ namespace UserService.App.Mapping
         public MappingProfile() 
         {
             CreateMap<GrpcCreateUserDto, CreateUserDto>();
-            CreateMap<CreateUserDto, UserEntity>();
+            CreateMap<CreateUserDto, User>();
             CreateMap<ApiResponseDto, GrpcResponseDto>();
         }
     }

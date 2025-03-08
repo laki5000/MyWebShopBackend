@@ -24,8 +24,17 @@ namespace ProductService.App.Services
 
         public async Task<ApiResponseDto> CreateAsync(CreateCategoryDto createCategoryDto)
         {
+            var existsByName = await _categoryRepository.ExistsByNameAsync(createCategoryDto.Name);
+            if (existsByName)
+            {
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NAME_ALREADY_EXISTS);
+                _logger.LogError("Category creation failed: Name already exists");
+                return errorResult;
+            }
+
             var entity = _mapper.Map<Category>(createCategoryDto);
             entity.Status = ObjectStatus.CREATED;
+            entity.Id = Guid.NewGuid().ToString();
             await _categoryRepository.AddAsync(entity);
 
             var result = ApiResponseDto.Success();

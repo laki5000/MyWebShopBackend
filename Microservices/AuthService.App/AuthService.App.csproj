@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <Protobuf Include="..\AuthService.Shared\Protos\auth_service_user.proto" GrpcServices="Server" />
-	  <Protobuf Include="..\AuthService.Shared\Protos\auth_service_role.proto" GrpcServices="Server" />
+	<Protobuf Include="..\AuthService.Shared\Protos\auth_service_role.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

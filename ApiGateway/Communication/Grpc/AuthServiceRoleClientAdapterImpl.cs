@@ -1,5 +1,5 @@
 ﻿using ApiGateway.Interfaces.Grpc;
-using Auth;
+using Authservice.Proto;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Shared.Dtos;

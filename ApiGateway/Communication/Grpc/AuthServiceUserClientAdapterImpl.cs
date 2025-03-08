@@ -1,5 +1,5 @@
 ﻿using ApiGateway.Interfaces.Grpc;
-using Auth;
+using Authservice.Proto;
 using AuthService.Shared.Dtos;
 using AutoMapper;
 using Shared.Dtos;

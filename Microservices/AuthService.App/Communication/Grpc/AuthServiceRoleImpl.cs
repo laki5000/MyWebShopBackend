@@ -1,4 +1,4 @@
-﻿using Auth;
+﻿using Authservice.Proto;
 using AuthService.App.Interfaces.Services;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;

@@ -1,8 +1,10 @@
-﻿using Auth;
+﻿using Authservice.Proto;
 using AuthService.Shared.Dtos;
 using AutoMapper;
+using Productservice.Proto;
+using ProductService.Shared.Dtos;
 using Shared.Dtos;
-using User;
+using Userservice.Proto;
 using UserService.Shared.Dtos;
 
 namespace ApiGateway.Mapping
@@ -15,10 +17,12 @@ namespace ApiGateway.Mapping
             CreateMap<LoginAspNetUserDto, GrpcLoginAspNetUserDto>();
             CreateMap<CreateUserDto, GrpcCreateUserDto>();
             CreateMap<ChangeAspNetUserPasswordDto, GrpcChangeAspNetUserPasswordDto>();
+            CreateMap<CreateCategoryDto, GrpcCreateCategoryDto>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
             CreateMap<GrpcStringListResponseDto, ApiResponseDto<List<string>>>();
-            CreateMap<Auth.GrpcResponseDto, ApiResponseDto>();
-            CreateMap<User.GrpcResponseDto, ApiResponseDto>();
+            CreateMap<Authservice.Proto.GrpcResponseDto, ApiResponseDto>();
+            CreateMap<Userservice.Proto.GrpcResponseDto, ApiResponseDto>();
+            CreateMap<Productservice.Proto.GrpcResponseDto, ApiResponseDto>();
         }
     }
 }

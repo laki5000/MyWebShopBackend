@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+package productservice.proto;
+
+import "google/protobuf/wrappers.proto";
+
+service ProductServiceCategory {
+    rpc Create (GrpcCreateCategoryDto) returns (GrpcResponseDto);
+}
+
+message GrpcCreateCategoryDto {
+    string created_by = 1;
+    string name = 2;
+}
+
+message GrpcResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+}
+
