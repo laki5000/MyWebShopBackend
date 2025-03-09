@@ -4,7 +4,6 @@
     {
         Task<T> AddAsync(T entity);
         Task<T?> FindByIdAsync(string id);
-        Task<T?> UpdateAsync(T entity);
-        Task<T> SoftDeleteAsync(T entity, string deletedBy);
+        Task<T> UpdateAsync(T entity);
     }
 }

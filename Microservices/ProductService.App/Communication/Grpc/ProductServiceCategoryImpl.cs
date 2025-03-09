@@ -30,5 +30,29 @@ namespace ProductService.App.Communication.Grpc
             _logger.LogInformation("Category created successfully");
             return response;
         }
+
+        public override async Task<GrpcResponseDto> Update(GrpcUpdateCategoryDto request, ServerCallContext context)
+        {
+            _logger.LogInformation("Update category request recieved");
+
+            var updateCategoryDto = _mapper.Map<UpdateCategoryDto>(request);
+            var result = await _categoryService.UpdateAsync(updateCategoryDto);
+            var response = _mapper.Map<GrpcResponseDto>(result);
+
+            _logger.LogInformation("Category updated successfully");
+            return response;
+        }
+
+        public override async Task<GrpcResponseDto> Delete(GrpcDeleteCategoryDto request, ServerCallContext context)
+        {
+            _logger.LogInformation("Delete category request recieved");
+
+            var deleteCategoryDto = _mapper.Map<DeleteCategoryDto>(request);
+            var result = await _categoryService.DeleteAsync(deleteCategoryDto);
+            var response = _mapper.Map<GrpcResponseDto>(result);
+
+            _logger.LogInformation("Category deleted successfully");
+            return response;
+        }
     }
 }

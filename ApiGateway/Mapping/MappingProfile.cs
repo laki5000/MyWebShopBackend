@@ -18,6 +18,8 @@ namespace ApiGateway.Mapping
             CreateMap<CreateUserDto, GrpcCreateUserDto>();
             CreateMap<ChangeAspNetUserPasswordDto, GrpcChangeAspNetUserPasswordDto>();
             CreateMap<CreateCategoryDto, GrpcCreateCategoryDto>();
+            CreateMap<UpdateCategoryDto, GrpcUpdateCategoryDto>();
+            CreateMap<DeleteCategoryDto, GrpcDeleteCategoryDto>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
             CreateMap<GrpcStringListResponseDto, ApiResponseDto<List<string>>>();
             CreateMap<Authservice.Proto.GrpcResponseDto, ApiResponseDto>();

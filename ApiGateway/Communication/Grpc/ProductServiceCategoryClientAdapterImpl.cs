@@ -31,5 +31,29 @@ namespace ApiGateway.Communication.Grpc
 
             return _mapper.Map<ApiResponseDto>(response);
         }
+
+        public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto request)
+        {
+            _logger.LogInformation("Update category request sent");
+
+            var grpcUpdateCategoryDto = _mapper.Map<GrpcUpdateCategoryDto>(request);
+            var result = await _productServiceCategoryClient.UpdateAsync(grpcUpdateCategoryDto);
+            var response = _mapper.Map<ApiResponseDto>(result);
+
+            _logger.LogInformation("Category updated successfully");
+            return _mapper.Map<ApiResponseDto>(response);
+        }
+
+        public async Task<ApiResponseDto> DeleteAsync(DeleteCategoryDto request)
+        {
+            _logger.LogInformation("Delete category request sent");
+
+            var grpcDeleteCategoryDto = _mapper.Map<GrpcDeleteCategoryDto>(request);
+            var result = await _productServiceCategoryClient.DeleteAsync(grpcDeleteCategoryDto);
+            var response = _mapper.Map<ApiResponseDto>(result);
+
+            _logger.LogInformation("Category deleted successfully");
+            return _mapper.Map<ApiResponseDto>(response);
+        }
     }
 }

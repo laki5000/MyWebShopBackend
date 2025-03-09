@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using ProductService.App.Interfaces.Repositories;
 using ProductService.App.Interfaces.Services;
 using ProductService.App.Models;
@@ -43,8 +42,7 @@ namespace ProductService.App.Services
 
         public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto updateCategoryDto)
         {
-            var entity = _mapper.Map<Category>(updateCategoryDto);
-            entity = await _categoryRepository.UpdateAsync(entity);
+            var entity = await FindByIdAsync(updateCategoryDto.Id);
             if (entity is null)
             {
                 var errorResult = ApiResponseDto.Fail(ErrorCode.CATEGORY_NOT_FOUND);
@@ -52,13 +50,29 @@ namespace ProductService.App.Services
                 return errorResult;
             }
 
+            if (updateCategoryDto.Name is not null)
+            {
+                var existsByName = await _categoryRepository.ExistsByNameAsync(updateCategoryDto.Name, updateCategoryDto.Id);
+                if (existsByName)
+                {
+                    var errorResult = ApiResponseDto.Fail(ErrorCode.NAME_ALREADY_EXISTS);
+                    _logger.LogError("Category update failed: Name already exists");
+                    return errorResult;
+                }
+                entity.Name = updateCategoryDto.Name;
+            }
+
+            entity.UpdatedBy = updateCategoryDto.UpdatedBy;
+            entity.UpdatedAt = DateTime.UtcNow;
+            await _categoryRepository.UpdateAsync(entity);
+
             var result = ApiResponseDto.Success();
             return result;
         }
 
         public async Task<ApiResponseDto> DeleteAsync(DeleteCategoryDto deleteCategoryDto)
         {
-            var entity = await FindByIdAsync(deleteCategoryDto.Id);
+            var entity = await FindByIdAsync(deleteCategoryDto.Id!);
             if (entity is null)
             {
                 var errorResult = ApiResponseDto.Fail(ErrorCode.CATEGORY_NOT_FOUND);
@@ -66,8 +80,12 @@ namespace ProductService.App.Services
                 return errorResult;
             }
 
-            await _categoryRepository.SoftDeleteAsync(entity, deleteCategoryDto.DeletedBy!);
-            
+            var now = DateTime.UtcNow;
+            entity.Status = ObjectStatus.DELETED;
+            entity.DeletedAt = now;
+            entity.DeletedBy = deleteCategoryDto.DeletedBy;
+            await _categoryRepository.UpdateAsync(entity);
+
             var result = ApiResponseDto.Success();
             return result;
         }

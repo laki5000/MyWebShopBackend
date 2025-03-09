@@ -39,5 +39,45 @@ namespace ApiGateway.Controllers
 
             return Ok(productServiceResult);
         }
+
+        [Authorize(Roles = nameof(Role.ADMIN))]
+        [HttpPatch("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateCategoryDto updateCategoryDto)
+        {
+            var userId = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            updateCategoryDto.UpdatedBy = userId;
+
+            var productServiceResult = await _productServiceCategoryClientAdapter.UpdateAsync(updateCategoryDto);
+            if (!productServiceResult.IsSuccess)
+            {
+                _logger.LogWarning("Failed to update category for {Id}. Error: {Error}", updateCategoryDto.Id, productServiceResult.ErrorCode);
+                var result = GetObjectResult(productServiceResult);
+                return result;
+            }
+
+            return Ok(productServiceResult);
+        }
+
+        [Authorize(Roles = nameof(Role.ADMIN))]
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            var userId = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var deleteCategoryDto = new DeleteCategoryDto
+            {
+                Id = id,
+                DeletedBy = userId
+            };
+
+            var productServiceResult = await _productServiceCategoryClientAdapter.DeleteAsync(deleteCategoryDto);
+            if (!productServiceResult.IsSuccess)
+            {
+                _logger.LogWarning("Failed to delete category for {Id}. Error: {Error}", deleteCategoryDto.Id, productServiceResult.ErrorCode);
+                var result = GetObjectResult(productServiceResult);
+                return result;
+            }
+
+            return Ok(productServiceResult);
+        }
     }
 }
