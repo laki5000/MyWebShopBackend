@@ -23,7 +23,7 @@
         USER_UPDATE_FAILED,
         USER_DELETE_FAILED,
 
-        // Entity-related errors
+        // Category-related errors
         CATEGORY_NOT_FOUND
     }
 }

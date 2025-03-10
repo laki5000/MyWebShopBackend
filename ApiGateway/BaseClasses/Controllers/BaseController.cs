@@ -8,16 +8,34 @@ namespace ApiGateway.BaseClasses.Controllers
     {
         private static readonly Dictionary<ErrorCode, Func<ApiResponseDto, IActionResult>> ErrorCodeHandlers = new()
         {
-            { ErrorCode.USERNAME_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
+            { ErrorCode.UNKNOWN_ERROR, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
+
+            // General validation errors
+            { ErrorCode.NAME_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
             { ErrorCode.EMAIL_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
-            { ErrorCode.INVALID_USERNAME_OR_PASSWORD, dto => new UnauthorizedObjectResult(dto) }
+            { ErrorCode.USERNAME_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
+            { ErrorCode.PASSWORD_SAME_AS_OLD, dto => new ConflictObjectResult(dto) },
+
+            // Authentication and authorization errors
+            { ErrorCode.INVALID_USERNAME_OR_PASSWORD, dto => new UnauthorizedObjectResult(dto) },
+            { ErrorCode.INVALID_PASSWORD, dto => new UnauthorizedObjectResult(dto) },
+            { ErrorCode.INVALID_TOKEN, dto => new UnauthorizedObjectResult(dto) },
+            { ErrorCode.FORBIDDEN, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status403Forbidden } },
+            { ErrorCode.ROLE_ASSIGNMENT_FAILED, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
+
+            // User-related errors
+            { ErrorCode.USER_NOT_FOUND, dto => new NotFoundObjectResult(dto) },
+            { ErrorCode.USER_CREATION_FAILED, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
+            { ErrorCode.USER_UPDATE_FAILED, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
+            { ErrorCode.USER_DELETE_FAILED, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
+
+            // Category-related errors
+            { ErrorCode.CATEGORY_NOT_FOUND, dto => new NotFoundObjectResult(dto) }
         };
 
         protected static IActionResult GetObjectResult(ApiResponseDto apiResponseDto)
         {
-            apiResponseDto.ErrorCode ??= ErrorCode.UNKNOWN_ERROR;
-
-            if (ErrorCodeHandlers.TryGetValue(apiResponseDto.ErrorCode.Value, out var handler))
+            if (ErrorCodeHandlers.TryGetValue(apiResponseDto.ErrorCode!.Value, out var handler))
             {
                 return handler(apiResponseDto);
             }
