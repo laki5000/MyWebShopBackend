@@ -14,6 +14,7 @@ namespace ProductService.App.Mapping
             CreateMap<CreateCategoryDto, Category>();
             CreateMap<GrpcUpdateCategoryDto, UpdateCategoryDto>();
             CreateMap<GrpcDeleteCategoryDto, DeleteCategoryDto>();
+            CreateMap<Category, GetCategoryDto>();
             CreateMap<ApiResponseDto, GrpcResponseDto>();
         }
     }

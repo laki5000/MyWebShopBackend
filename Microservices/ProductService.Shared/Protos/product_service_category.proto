@@ -6,6 +6,7 @@ import "google/protobuf/wrappers.proto";
 
 service ProductServiceCategory {
     rpc Create (GrpcCreateCategoryDto) returns (GrpcResponseDto);
+    rpc GetAll (google.protobuf.Empty) returns (GrpcGetCategoryDtoListResponseDto);
     rpc Update (GrpcUpdateCategoryDto) returns (GrpcResponseDto);
     rpc Delete (GrpcDeleteCategoryDto) returns (GrpcResponseDto);
 }
@@ -15,9 +16,9 @@ message GrpcCreateCategoryDto {
     string name = 2;
 }
 
-message GrpcResponseDto {
-    bool is_success = 1;
-    google.protobuf.Int32Value error_code = 2;
+message GrpcGetCategoryDto {
+    string id = 1;
+    string name = 2;
 }
 
 message GrpcUpdateCategoryDto {
@@ -29,5 +30,16 @@ message GrpcUpdateCategoryDto {
 message GrpcDeleteCategoryDto {
     string id = 1;
     string deleted_by = 2;
+}
+
+message GrpcResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+}
+
+message GrpcGetCategoryDtoListResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+    repeated GrpcGetCategoryDto data = 3;
 }
 

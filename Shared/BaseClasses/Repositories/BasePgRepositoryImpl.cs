@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.BaseClasses.Interfaces.Repositories;
-using Shared.Enums;
+using System.Linq.Expressions;
 
 namespace Shared.BaseClasses.Repositories
 {
@@ -24,6 +24,11 @@ namespace Shared.BaseClasses.Repositories
         public async Task<T?> FindByIdAsync(string id)
         {
             return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<List<T>> GetAllWithExpressionAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _context.Set<T>().Where(expression).ToListAsync();
         }
 
         public async Task<T> UpdateAsync(T entity)

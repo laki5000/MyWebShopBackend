@@ -3,6 +3,8 @@ using ProductService.App.Data;
 using ProductService.App.Interfaces.Repositories;
 using ProductService.App.Models;
 using Shared.BaseClasses.Repositories;
+using Shared.Enums;
+using System.Linq.Expressions;
 
 namespace ProductService.App.Repositories
 {
@@ -23,6 +25,14 @@ namespace ProductService.App.Repositories
         public async Task<bool> ExistsByNameAsync(string name, string id)
         {
             return await _context.Categories.AnyAsync(c => c.Name == name && c.Id != id);
+        }
+
+        public async Task<List<Category>> GetAllNotDeletedAsync()
+        {
+            Expression<Func<Category, bool>> expression = c => c.Status != ObjectStatus.DELETED;
+            var result = await GetAllWithExpressionAsync(expression);
+
+            return result;
         }
     }
 }

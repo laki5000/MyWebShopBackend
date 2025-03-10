@@ -40,6 +40,14 @@ namespace ProductService.App.Services
             return result;
         }
 
+        public async Task<ApiResponseDto<List<GetCategoryDto>>> GetAllAsync()
+        {
+            var entities = await _categoryRepository.GetAllNotDeletedAsync();
+            var dtos = _mapper.Map<List<GetCategoryDto>>(entities);
+            var result = ApiResponseDto<List<GetCategoryDto>>.Success(dtos);
+            return result;
+        }
+
         public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto updateCategoryDto)
         {
             var entity = await FindByIdAsync(updateCategoryDto.Id);
