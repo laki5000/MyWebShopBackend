@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Productservice.Proto;
 using ProductService.App.Interfaces.Services;
@@ -22,12 +23,23 @@ namespace ProductService.App.Communication.Grpc
         public override async Task<GrpcResponseDto> Create(GrpcCreateCategoryDto request, ServerCallContext context)
         {
             _logger.LogInformation("Create category request recieved");
-            
+
             var createCategoryDto = _mapper.Map<CreateCategoryDto>(request);
             var result = await _categoryService.CreateAsync(createCategoryDto);
             var response = _mapper.Map<GrpcResponseDto>(result);
 
             _logger.LogInformation("Category created successfully");
+            return response;
+        }
+
+        public override async Task<GrpcGetCategoryDtoListResponseDto> GetAll(Empty request, ServerCallContext context)
+        {
+            _logger.LogInformation("Get all categories request recieved");
+
+            var result = await _categoryService.GetAllAsync();
+            var response = _mapper.Map<GrpcGetCategoryDtoListResponseDto>(result);
+
+            _logger.LogInformation("Categories retrieved successfully");
             return response;
         }
 

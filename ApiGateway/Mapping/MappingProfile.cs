@@ -22,9 +22,11 @@ namespace ApiGateway.Mapping
             CreateMap<DeleteCategoryDto, GrpcDeleteCategoryDto>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
             CreateMap<GrpcStringListResponseDto, ApiResponseDto<List<string>>>();
+            CreateMap<GrpcGetCategoryDto, GetCategoryDto>();
             CreateMap<Authservice.Proto.GrpcResponseDto, ApiResponseDto>();
             CreateMap<Userservice.Proto.GrpcResponseDto, ApiResponseDto>();
             CreateMap<Productservice.Proto.GrpcResponseDto, ApiResponseDto>();
+            CreateMap<GrpcGetCategoryDtoListResponseDto, ApiResponseDto<List<GetCategoryDto>>>();
         }
     }
 }

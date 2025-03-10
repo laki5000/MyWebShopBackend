@@ -11,7 +11,7 @@
         PASSWORD_SAME_AS_OLD,
 
         // Authentication and authorization errors
-        INVALID_USERNAME_AND_PASSWORD,
+        INVALID_USERNAME_OR_PASSWORD,
         INVALID_PASSWORD,
         INVALID_TOKEN,
         FORBIDDEN,

@@ -1,6 +1,5 @@
 ﻿using ApiGateway.BaseClasses.Controllers;
 using ApiGateway.Interfaces.Grpc;
-using AuthService.Shared.Dtos;
 using AuthService.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +32,20 @@ namespace ApiGateway.Controllers
             if (!productServiceResult.IsSuccess)
             {
                 _logger.LogWarning("Failed to create category for {Name}. Error: {Error}", createCategoryDto.Name, productServiceResult.ErrorCode);
+                var result = GetObjectResult(productServiceResult);
+                return result;
+            }
+
+            return Ok(productServiceResult);
+        }
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var productServiceResult = await _productServiceCategoryClientAdapter.GetAllAsync();
+            if (!productServiceResult.IsSuccess)
+            {
+                _logger.LogWarning("Failed to get all categories. Error: {Error}", productServiceResult.ErrorCode);
                 var result = GetObjectResult(productServiceResult);
                 return result;
             }

@@ -1,5 +1,6 @@
 ﻿using ApiGateway.Interfaces.Grpc;
 using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using Productservice.Proto;
 using ProductService.Shared.Dtos;
 using Shared.Dtos;
@@ -30,6 +31,17 @@ namespace ApiGateway.Communication.Grpc
             _logger.LogInformation("Category created successfully");
 
             return _mapper.Map<ApiResponseDto>(response);
+        }
+
+        public async Task<ApiResponseDto<List<GetCategoryDto>>> GetAllAsync()
+        {
+            _logger.LogInformation("Get all categories request sent");
+
+            var result = await _productServiceCategoryClient.GetAllAsync(new Empty());
+            var response = _mapper.Map<ApiResponseDto<List<GetCategoryDto>>>(result);
+
+            _logger.LogInformation("Categories retrieved successfully");
+            return _mapper.Map<ApiResponseDto<List<GetCategoryDto>>>(response);
         }
 
         public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto request)

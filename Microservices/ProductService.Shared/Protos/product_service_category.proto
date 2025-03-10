@@ -3,6 +3,7 @@
 package productservice.proto;
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
 
 service ProductServiceCategory {
     rpc Create (GrpcCreateCategoryDto) returns (GrpcResponseDto);
