@@ -25,9 +25,9 @@ namespace AuthService.App.Communication.Kafka
             _consumer = CreateConsumer(appSettings);
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return StartConsumerLoop(stoppingToken);
+            await StartConsumerLoopAsync(stoppingToken);
         }
 
         private IConsumer<string, string> CreateConsumer(IOptions<AppSettings> appSettings)
@@ -51,9 +51,9 @@ namespace AuthService.App.Communication.Kafka
             return consumer;
         }
 
-        private Task StartConsumerLoop(CancellationToken stoppingToken)
+        private async Task StartConsumerLoopAsync(CancellationToken stoppingToken)
         {
-            return Task.Run(() =>
+            await Task.Run(async () =>
             {
                 try
                 {
@@ -68,7 +68,7 @@ namespace AuthService.App.Communication.Kafka
                                 continue;
                             }
 
-                            Task.Run(() => ProcessResultAsync(consumeResult), stoppingToken);
+                            await ProcessResultAsync(consumeResult);
                         }
                         catch (ConsumeException ex)
                         {
