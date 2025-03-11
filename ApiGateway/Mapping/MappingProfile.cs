@@ -20,6 +20,9 @@ namespace ApiGateway.Mapping
             CreateMap<CreateCategoryDto, GrpcCreateCategoryDto>();
             CreateMap<UpdateCategoryDto, GrpcUpdateCategoryDto>();
             CreateMap<DeleteCategoryDto, GrpcDeleteCategoryDto>();
+            CreateMap<CreateProductDto, GrpcCreateProductDto>();
+            CreateMap<UpdateProductDto, GrpcUpdateProductDto>();
+            CreateMap<DeleteProductDto, GrpcDeleteProductDto>();
             CreateMap<GrpcStringResponseDto, ApiResponseDto<string>>();
             CreateMap<GrpcStringListResponseDto, ApiResponseDto<List<string>>>();
             CreateMap<GrpcGetCategoryDto, GetCategoryDto>();

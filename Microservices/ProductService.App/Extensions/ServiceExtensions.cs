@@ -25,9 +25,11 @@ namespace ProductService.App.Extensions
 
             // Services
             services.AddScoped<ICategoryService, CategoryServiceImpl>();
+            services.AddScoped<IProductService, ProductServiceImpl>();
 
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepositoryImpl>();
+            services.AddScoped<IProductRepository, ProductRepositoryImpl>();
 
             // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);

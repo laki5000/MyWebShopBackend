@@ -29,8 +29,7 @@ namespace ApiGateway.Communication.Grpc
             var response = _mapper.Map<ApiResponseDto>(result);
 
             _logger.LogInformation("Category created successfully");
-
-            return _mapper.Map<ApiResponseDto>(response);
+            return response;
         }
 
         public async Task<ApiResponseDto<List<GetCategoryDto>>> GetAllAsync()
@@ -41,7 +40,7 @@ namespace ApiGateway.Communication.Grpc
             var response = _mapper.Map<ApiResponseDto<List<GetCategoryDto>>>(result);
 
             _logger.LogInformation("Categories retrieved successfully");
-            return _mapper.Map<ApiResponseDto<List<GetCategoryDto>>>(response);
+            return response;
         }
 
         public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto request)
@@ -53,7 +52,7 @@ namespace ApiGateway.Communication.Grpc
             var response = _mapper.Map<ApiResponseDto>(result);
 
             _logger.LogInformation("Category updated successfully");
-            return _mapper.Map<ApiResponseDto>(response);
+            return response;
         }
 
         public async Task<ApiResponseDto> DeleteAsync(DeleteCategoryDto request)
@@ -65,7 +64,7 @@ namespace ApiGateway.Communication.Grpc
             var response = _mapper.Map<ApiResponseDto>(result);
 
             _logger.LogInformation("Category deleted successfully");
-            return _mapper.Map<ApiResponseDto>(response);
+            return response;
         }
     }
 }

@@ -36,7 +36,9 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <Protobuf Include="..\ProductService.Shared\Protos\product_service_common.proto" GrpcServices="None" />
     <Protobuf Include="..\ProductService.Shared\Protos\product_service_category.proto" GrpcServices="Server" />
+    <Protobuf Include="..\ProductService.Shared\Protos\product_service_product.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

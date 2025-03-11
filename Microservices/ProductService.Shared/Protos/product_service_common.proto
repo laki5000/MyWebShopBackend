@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package productservice.proto;
+
+import "google/protobuf/wrappers.proto";
+
+message GrpcResponseDto {
+    bool is_success = 1;
+    google.protobuf.Int32Value error_code = 2;
+}

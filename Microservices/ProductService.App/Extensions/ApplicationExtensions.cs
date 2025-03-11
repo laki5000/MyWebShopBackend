@@ -9,6 +9,7 @@ namespace ProductService.App.Extensions
         public static void ConfigureEndpoints(this WebApplication app)
         {
             app.MapGrpcService<ProductServiceCategoryImpl>();
+            app.MapGrpcService<ProductServiceProductImpl>();
             app.MapHealthChecks("/health");
         }
 

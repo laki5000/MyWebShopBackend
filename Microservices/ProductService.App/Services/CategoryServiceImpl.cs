@@ -50,7 +50,7 @@ namespace ProductService.App.Services
 
         public async Task<ApiResponseDto> UpdateAsync(UpdateCategoryDto updateCategoryDto)
         {
-            var entity = await FindByIdAsync(updateCategoryDto.Id);
+            var entity = await FindByIdAsync(updateCategoryDto.Id!);
             if (entity is null)
             {
                 var errorResult = ApiResponseDto.Fail(ErrorCode.CATEGORY_NOT_FOUND);
@@ -60,7 +60,7 @@ namespace ProductService.App.Services
 
             if (updateCategoryDto.Name is not null)
             {
-                var existsByName = await _categoryRepository.ExistsByNameAsync(updateCategoryDto.Name, updateCategoryDto.Id);
+                var existsByName = await _categoryRepository.ExistsByNameAsync(updateCategoryDto.Name, updateCategoryDto.Id!);
                 if (existsByName)
                 {
                     var errorResult = ApiResponseDto.Fail(ErrorCode.NAME_ALREADY_EXISTS);

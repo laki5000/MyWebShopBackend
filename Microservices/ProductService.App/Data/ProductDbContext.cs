@@ -22,6 +22,10 @@ namespace ProductService.App.Data
                 .HasOne(p => p.Category)
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId);
+
+            modelBuilder.Entity<Product>()
+                .HasIndex(p => p.Title)
+                .IsUnique();
         }
     }
 }

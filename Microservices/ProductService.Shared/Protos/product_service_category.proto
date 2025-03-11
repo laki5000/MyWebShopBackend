@@ -4,6 +4,7 @@ package productservice.proto;
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
+import "product_service_common.proto";
 
 service ProductServiceCategory {
     rpc Create (GrpcCreateCategoryDto) returns (GrpcResponseDto);
@@ -31,11 +32,6 @@ message GrpcUpdateCategoryDto {
 message GrpcDeleteCategoryDto {
     string id = 1;
     string deleted_by = 2;
-}
-
-message GrpcResponseDto {
-    bool is_success = 1;
-    google.protobuf.Int32Value error_code = 2;
 }
 
 message GrpcGetCategoryDtoListResponseDto {

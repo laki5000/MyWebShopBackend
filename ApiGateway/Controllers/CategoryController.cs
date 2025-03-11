@@ -54,11 +54,12 @@ namespace ApiGateway.Controllers
         }
 
         [Authorize(Roles = nameof(Role.ADMIN))]
-        [HttpPatch("update")]
-        public async Task<IActionResult> Update([FromBody] UpdateCategoryDto updateCategoryDto)
+        [HttpPatch("update/{id}")]
+        public async Task<IActionResult> Update([FromBody] UpdateCategoryDto updateCategoryDto, [FromRoute] string id)
         {
             var userId = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             updateCategoryDto.UpdatedBy = userId;
+            updateCategoryDto.Id = id;
 
             var productServiceResult = await _productServiceCategoryClientAdapter.UpdateAsync(updateCategoryDto);
             if (!productServiceResult.IsSuccess)

@@ -1,17 +1,17 @@
 ﻿using ApiGateway.Communication.Grpc;
+using ApiGateway.Configurations;
 using ApiGateway.Interfaces.Grpc;
+using ApiGateway.Mapping;
+using Authservice.Proto;
 using AuthService.Shared.Communication.Kafka;
 using AuthService.Shared.Interfaces.Communication.Kafka;
 using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Configurations;
-using System.Text.Json.Serialization;
-using System.Text;
-using ApiGateway.Mapping;
-using ApiGateway.Configurations;
-using Authservice.Proto;
-using Userservice.Proto;
 using Productservice.Proto;
+using Shared.Configurations;
+using System.Text;
+using System.Text.Json.Serialization;
+using Userservice.Proto;
 
 namespace ApiGateway.Extensions
 {
@@ -31,6 +31,7 @@ namespace ApiGateway.Extensions
             services.AddScoped<IAuthServiceRoleClientAdapter, AuthServiceRoleClientAdapterImpl>();
             services.AddScoped<IUserServiceUserClientAdapter, UserServiceUserClientAdapterImpl>();
             services.AddScoped<IProductServiceCategoryClientAdapter, ProductServiceCategoryClientAdapterImpl>();
+            services.AddScoped<IProductServiceProductClientAdapter, ProductServiceProductClientAdapterImpl>();
 
             // Controller settings
             services.AddControllers()
@@ -83,6 +84,19 @@ namespace ApiGateway.Extensions
             });
 
             services.AddGrpcClient<ProductServiceCategory.ProductServiceCategoryClient>(options =>
+            {
+                options.Address = new Uri("http://productservice:5000");
+            })
+            .ConfigureChannel(options =>
+            {
+                options.Credentials = ChannelCredentials.Insecure;
+                options.HttpHandler = new SocketsHttpHandler()
+                {
+                    EnableMultipleHttp2Connections = true
+                };
+            });
+
+            services.AddGrpcClient<ProductServiceProduct.ProductServiceProductClient>(options =>
             {
                 options.Address = new Uri("http://productservice:5000");
             })
