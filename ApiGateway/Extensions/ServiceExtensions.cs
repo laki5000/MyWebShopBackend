@@ -38,6 +38,7 @@ namespace ApiGateway.Extensions
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 });
 
             // AutoMapper
