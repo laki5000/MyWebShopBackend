@@ -11,6 +11,6 @@ namespace ProductService.App.Models
         public int? StockQuantity { get; set; }
         public required string CategoryId { get; set; }
         public required Category Category { get; set; }
-        public required string ArtistId { get; set; }
+        public required string OwnerId { get; set; }
     }
 }

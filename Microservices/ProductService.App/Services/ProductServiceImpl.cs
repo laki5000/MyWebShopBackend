@@ -44,6 +44,7 @@ namespace ProductService.App.Services
             var entity = _mapper.Map<Product>(createProductDto);
             entity.Id = Guid.NewGuid().ToString();
             entity.Status = DetermineProductStatus(entity);
+            entity.OwnerId = createProductDto.CreatedBy!;
             await _productRepository.AddAsync(entity);
 
             var result = ApiResponseDto.Success();
@@ -68,6 +69,13 @@ namespace ProductService.App.Services
                 var errorResult = ApiResponseDto.Fail(ErrorCode.PRODUCT_NOT_FOUND);
                 _logger.LogError("Product update failed: Product not found");
                 return errorResult;
+            }
+
+            var isProductOwner = entity.OwnerId == updateProductDto.UpdatedBy;
+            if (!isProductOwner)
+            {
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_PRODUCT_OWNER);
+                _logger.LogError("Product update failed: Not product owner");
             }
 
             if (updateProductDto.CategoryId is not null)
@@ -120,6 +128,14 @@ namespace ProductService.App.Services
             {
                 var errorResult = ApiResponseDto.Fail(ErrorCode.PRODUCT_NOT_FOUND);
                 _logger.LogError("Product deletion failed: Product not found");
+                return errorResult;
+            }
+
+            var isProductOwner = entity.OwnerId == deleteProductDto.DeletedBy;
+            if (!isProductOwner)
+            {
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_PRODUCT_OWNER);
+                _logger.LogError("Product deletion failed: Not product owner");
                 return errorResult;
             }
 
