@@ -25,7 +25,7 @@ namespace Shared.BaseClasses.Communication.Kafka
             return new ProducerBuilder<string, string>(config).Build();
         }
 
-        protected async Task SendKafkaMessageAsync(string topic, string message)
+        protected async Task SendKafkaMessageAsync(string topic, string message, string key)
         {
             if (string.IsNullOrEmpty(message))
             {
@@ -37,6 +37,7 @@ namespace Shared.BaseClasses.Communication.Kafka
             {
                 var messageObject = new Message<string, string>
                 {
+                    Key = key,
                     Value = message
                 };
 
