@@ -3,87 +3,30 @@ using AuthService.Interfaces.Services;
 using AuthService.Shared.Enums.AuthService.Shared.Communication.Kafka;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
+using Shared.BaseClasses.Communication.Kafka;
 
 namespace AuthService.App.Communication.Kafka
 {
-    public class KafkaConsumerImpl : BackgroundService
+    public class KafkaConsumerImpl : BaseKafkaConsumer
     {
-        private readonly ILogger<KafkaConsumerImpl> _logger;
-        private readonly IConsumer<string, string> _consumer;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        private readonly string _authServiceGroup = "auth-service-group";
 
         public KafkaConsumerImpl(
             ILogger<KafkaConsumerImpl> logger,
             IOptions<AppSettings> appSettings,
             IServiceScopeFactory serviceScopeFactory
-        )
+        ) : base(logger, appSettings.Value.KafkaSettings, "auth-service-group")
         {
-            _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
-            _consumer = CreateConsumer(appSettings);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await StartConsumerLoopAsync(stoppingToken);
-        }
+        protected override string[] GetTopics() =>
+            Enum.GetValues(typeof(AuthServiceKafkaTopic))
+                .Cast<AuthServiceKafkaTopic>()
+                .Select(topic => topic.ToString())
+                .ToArray();
 
-        private IConsumer<string, string> CreateConsumer(IOptions<AppSettings> appSettings)
-        {
-            var kafkaSettings = appSettings.Value.KafkaSettings;
-            var autoOffsetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings.AutoOffsetReset);
-            var config = new ConsumerConfig
-            {
-                BootstrapServers = kafkaSettings.BootstrapServers,
-                GroupId = _authServiceGroup,
-                AutoOffsetReset = autoOffsetReset,
-            };
-
-            var consumer = new ConsumerBuilder<string, string>(config).Build();
-            var topics = Enum.GetValues(typeof(AuthServiceKafkaTopic))
-                 .Cast<AuthServiceKafkaTopic>()
-                 .Select(topic => topic.ToString());
-
-            consumer.Subscribe(topics);
-
-            return consumer;
-        }
-
-        private async Task StartConsumerLoopAsync(CancellationToken stoppingToken)
-        {
-            await Task.Run(async () =>
-            {
-                try
-                {
-                    while (!stoppingToken.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            var consumeResult = _consumer.Consume(stoppingToken);
-
-                            if (consumeResult.IsPartitionEOF)
-                            {
-                                continue;
-                            }
-
-                            await ProcessResultAsync(consumeResult);
-                        }
-                        catch (ConsumeException ex)
-                        {
-                            _logger.LogError($"Error consuming message: {ex.Error.Reason}");
-                        }
-                    }
-                }
-                finally
-                {
-                    _consumer.Close();
-                }
-            }, stoppingToken);
-        }
-
-        private async Task ProcessResultAsync(ConsumeResult<string, string> result)
+        protected override async Task ProcessMessageAsync(ConsumeResult<string, string> result)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {

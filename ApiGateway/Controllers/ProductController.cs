@@ -8,6 +8,8 @@ using System.Security.Claims;
 
 namespace ApiGateway.Controllers
 {
+    [ApiController]
+    [Route("api/v1/product")]
     public class ProductController : BaseController
     {
         private ILogger<ProductController> _logger;
@@ -19,7 +21,7 @@ namespace ApiGateway.Controllers
             _productServiceProductClientAdapter = productServiceProductClientAdapter;
         }
 
-        [Authorize(Roles = nameof(Role.ADMIN))]
+        [Authorize(Roles = $"{nameof(Role.ADMIN)},{nameof(Role.VENDOR)}")]
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateProductDto createProductDto)
         {
@@ -37,7 +39,7 @@ namespace ApiGateway.Controllers
             return Ok(productServiceResult);
         }
 
-        [Authorize(Roles = nameof(Role.ADMIN))]
+        [Authorize(Roles = $"{nameof(Role.ADMIN)},{nameof(Role.VENDOR)}")]
         [HttpPatch("update/{id}")]
         public async Task<IActionResult> Update([FromBody] UpdateProductDto updateProductDto, [FromRoute] string id)
         {
@@ -56,7 +58,7 @@ namespace ApiGateway.Controllers
             return Ok(productServiceResult);
         }
 
-        [Authorize(Roles = nameof(Role.ADMIN))]
+        [Authorize(Roles = $"{nameof(Role.ADMIN)},{nameof(Role.VENDOR)}")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
