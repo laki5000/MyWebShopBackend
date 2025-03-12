@@ -25,25 +25,24 @@ namespace Shared.BaseClasses.Communication.Kafka
             return new ProducerBuilder<string, string>(config).Build();
         }
 
-        protected async Task SendKafkaMessageAsync(string topic, string userId)
+        protected async Task SendKafkaMessageAsync(string topic, string message)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(message))
             {
-                _logger.LogError("Invalid userId: {UserId}", userId);
-                throw new ArgumentException("UserId cannot be null or empty.", nameof(userId));
+                _logger.LogError("Invalid message: {Message}", message);
+                throw new ArgumentException("Message cannot be null or empty.", nameof(message));
             }
 
             try
             {
-                var message = new Message<string, string>
+                var messageObject = new Message<string, string>
                 {
-                    Key = "userId",
-                    Value = userId
+                    Value = message
                 };
 
-                var deliveryResult = await _producer.ProduceAsync(topic, message);
+                var deliveryResult = await _producer.ProduceAsync(topic, messageObject);
 
-                _logger.LogInformation("Successfully sent '{Topic}' message to Kafka for user ID: {UserId}", topic, userId);
+                _logger.LogInformation("Successfully sent '{Topic}' message to Kafka. Message: {Message}", topic, message);
             }
             catch (ProduceException<string, string> ex)
             {
