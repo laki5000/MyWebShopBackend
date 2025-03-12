@@ -43,7 +43,7 @@ namespace ProductService.App.Services
 
             var entity = _mapper.Map<Product>(createProductDto);
             entity.Id = Guid.NewGuid().ToString();
-            entity.Status = DetermineProductStatus(entity);
+            entity.Status = ObjectStatus.CREATED;
             entity.OwnerId = createProductDto.CreatedBy!;
             await _productRepository.AddAsync(entity);
 
@@ -114,7 +114,6 @@ namespace ProductService.App.Services
             }
             entity.UpdatedBy = updateProductDto.UpdatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
-            entity.Status = DetermineProductStatus(entity);
             await _productRepository.UpdateAsync(entity);
 
             var result = ApiResponseDto.Success();
@@ -145,15 +144,6 @@ namespace ProductService.App.Services
             await _productRepository.UpdateAsync(entity);
 
             var result = ApiResponseDto.Success();
-            return result;
-        }
-
-        private static ObjectStatus DetermineProductStatus(Product product)
-        {
-            var entityHasQuantity = product.StockQuantity is not null && product.StockQuantity > 0;
-            var entityHasPrice = product.Price is not null && product.Price > 0;
-            var result = entityHasQuantity && entityHasPrice ? ObjectStatus.AVAILABLE : ObjectStatus.CREATED;
-
             return result;
         }
     }
