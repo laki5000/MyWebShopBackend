@@ -37,10 +37,10 @@ namespace ProductService.App.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    StockQuantity = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    StockQuantity = table.Column<int>(type: "integer", nullable: true),
                     CategoryId = table.Column<string>(type: "text", nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: false),
+                    OwnerId = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -70,6 +70,12 @@ namespace ProductService.App.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_Title",
+                table: "Products",
+                column: "Title",
+                unique: true);
         }
 
         /// <inheritdoc />

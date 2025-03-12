@@ -12,7 +12,7 @@ using ProductService.App.Data;
 namespace ProductService.App.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20250308141515_InitialCreate")]
+    [Migration("20250312135711_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -68,10 +68,6 @@ namespace ProductService.App.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("ArtistId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("CategoryId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -92,13 +88,17 @@ namespace ProductService.App.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StockQuantity")
+                    b.Property<int?>("StockQuantity")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -114,6 +114,9 @@ namespace ProductService.App.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });

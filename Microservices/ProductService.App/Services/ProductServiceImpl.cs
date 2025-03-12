@@ -91,7 +91,7 @@ namespace ProductService.App.Services
             }
             if (updateProductDto.Title is not null)
             {
-                var existsByTitle = await _productRepository.ExistsByTitleAsync(updateProductDto.Title);
+                var existsByTitle = await _productRepository.ExistsByTitleAsync(updateProductDto.Title, entity.Id);
                 if (existsByTitle)
                 {
                     var errorResult = ApiResponseDto.Fail(ErrorCode.TITLE_ALREADY_EXISTS);
