@@ -29,6 +29,6 @@
 
         // Product-related errors
         PRODUCT_NOT_FOUND, //new
-        NOT_PRODUCT_OWNER, //new
+        NOT_OWNER_OF_PRODUCT, //new
     }
 }

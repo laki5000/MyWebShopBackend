@@ -74,8 +74,8 @@ namespace ProductService.App.Services
             var isProductOwner = entity.OwnerId == updateProductDto.UpdatedBy;
             if (!isProductOwner)
             {
-                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_PRODUCT_OWNER);
-                _logger.LogError("Product update failed: Not product owner");
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_OWNER_OF_PRODUCT);
+                _logger.LogError("Product update failed: Not owner of product");
             }
 
             if (updateProductDto.CategoryId is not null)
@@ -133,8 +133,8 @@ namespace ProductService.App.Services
             var isProductOwner = entity.OwnerId == deleteProductDto.DeletedBy;
             if (!isProductOwner)
             {
-                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_PRODUCT_OWNER);
-                _logger.LogError("Product deletion failed: Not product owner");
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_OWNER_OF_PRODUCT);
+                _logger.LogError("Product deletion failed: Not owner of product");
                 return errorResult;
             }
 
