@@ -5,5 +5,6 @@ namespace ProductService.App.Interfaces.Repositories
 {
     public interface IProductRepository : IBasePgRepository<Product>
     {
+        Task<bool> ExistsByTitleAsync(string title);
     }
 }

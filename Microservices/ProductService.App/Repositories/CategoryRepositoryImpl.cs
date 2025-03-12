@@ -17,6 +17,11 @@ namespace ProductService.App.Repositories
             _context = context;
         }
 
+        public async Task<bool> ExistsByIdAsync(string id)
+        {
+            return await _context.Categories.AnyAsync(c => c.Id == id);
+        }
+
         public async Task<bool> ExistsByNameAsync(string name)
         {
             return await _context.Categories.AnyAsync(c => c.Name == name);

@@ -40,6 +40,22 @@ namespace ProductService.App.Services
             return result;
         }
 
+        private async Task<Category?> FindByIdAsync(string id)
+        {
+            var entity = await _categoryRepository.FindByIdAsync(id);
+            if (entity is null || entity.Status is ObjectStatus.DELETED)
+            {
+                return null;
+            }
+            return entity;
+        }
+
+        public async Task<bool> ExistsByIdAsync(string id)
+        {
+            var exists = await _categoryRepository.ExistsByIdAsync(id);
+            return exists;
+        }
+
         public async Task<ApiResponseDto<List<GetCategoryDto>>> GetAllAsync()
         {
             var entities = await _categoryRepository.GetAllNotDeletedAsync();
@@ -88,24 +104,13 @@ namespace ProductService.App.Services
                 return errorResult;
             }
 
-            var now = DateTime.UtcNow;
             entity.Status = ObjectStatus.DELETED;
-            entity.DeletedAt = now;
+            entity.DeletedAt = DateTime.UtcNow;
             entity.DeletedBy = deleteCategoryDto.DeletedBy;
             await _categoryRepository.UpdateAsync(entity);
 
             var result = ApiResponseDto.Success();
             return result;
-        }
-
-        private async Task<Category?> FindByIdAsync(string id)
-        {
-            var entity = await _categoryRepository.FindByIdAsync(id);
-            if (entity is null || entity.Status is ObjectStatus.DELETED)
-            {
-                return null;
-            }
-            return entity;
         }
     }
 }

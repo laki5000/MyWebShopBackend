@@ -9,6 +9,7 @@
         EMAIL_ALREADY_EXISTS,
         USERNAME_ALREADY_EXISTS,
         PASSWORD_SAME_AS_OLD,
+        TITLE_ALREADY_EXISTS, //new
 
         // Authentication and authorization errors
         INVALID_USERNAME_OR_PASSWORD,
@@ -24,6 +25,10 @@
         USER_DELETE_FAILED,
 
         // Category-related errors
-        CATEGORY_NOT_FOUND
+        CATEGORY_NOT_FOUND,
+
+        // Product-related errors
+        PRODUCT_NOT_FOUND, //new
+
     }
 }

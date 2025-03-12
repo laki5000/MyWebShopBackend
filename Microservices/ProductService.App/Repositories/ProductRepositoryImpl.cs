@@ -1,4 +1,5 @@
-﻿using ProductService.App.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductService.App.Data;
 using ProductService.App.Interfaces.Repositories;
 using ProductService.App.Models;
 using Shared.BaseClasses.Repositories;
@@ -12,6 +13,11 @@ namespace ProductService.App.Repositories
         public ProductRepositoryImpl(ProductDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<bool> ExistsByTitleAsync(string title)
+        {
+            return await _context.Products.AnyAsync(p => p.Title == title);
         }
     }
 }
