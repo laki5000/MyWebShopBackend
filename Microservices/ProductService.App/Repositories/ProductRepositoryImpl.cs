@@ -19,10 +19,5 @@ namespace ProductService.App.Repositories
         {
             return await _context.Products.AnyAsync(p => p.Title == title);
         }
-
-        public async Task<bool> ExistsByTitleAsync(string title, string id)
-        {
-            return await _context.Products.AnyAsync(p => p.Title == title && p.Id != id);
-        }
     }
 }

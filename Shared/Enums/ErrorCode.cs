@@ -9,7 +9,8 @@
         EMAIL_ALREADY_EXISTS,
         USERNAME_ALREADY_EXISTS,
         PASSWORD_SAME_AS_OLD,
-        TITLE_ALREADY_EXISTS, //new
+        TITLE_ALREADY_EXISTS,
+        NOT_MODIFIED,
 
         // Authentication and authorization errors
         INVALID_USERNAME_OR_PASSWORD,

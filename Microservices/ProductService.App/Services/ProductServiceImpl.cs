@@ -78,40 +78,54 @@ namespace ProductService.App.Services
                 _logger.LogError("Product update failed: Not owner of product");
             }
 
-            if (updateProductDto.CategoryId is not null)
+            var categoryChanged = updateProductDto.CategoryId is not null && updateProductDto.CategoryId != entity.CategoryId;
+            if (categoryChanged)
             {
-                var categoryExists = await _categoryService.ExistsByIdAsync(updateProductDto.CategoryId);
+                var categoryExists = await _categoryService.ExistsByIdAsync(updateProductDto.CategoryId!);
                 if (!categoryExists)
                 {
                     var errorResult = ApiResponseDto.Fail(ErrorCode.CATEGORY_NOT_FOUND);
                     _logger.LogError("Product creation failed: Category not found");
                     return errorResult;
                 }
-                entity.CategoryId = updateProductDto.CategoryId;
+                entity.CategoryId = updateProductDto.CategoryId!;
             }
-            if (updateProductDto.Title is not null)
+            var titleChanged = updateProductDto.Title is not null && updateProductDto.Title != entity.Title;
+            if (titleChanged)
             {
-                var existsByTitle = await _productRepository.ExistsByTitleAsync(updateProductDto.Title, entity.Id);
+                var existsByTitle = await _productRepository.ExistsByTitleAsync(updateProductDto.Title!);
                 if (existsByTitle)
                 {
                     var errorResult = ApiResponseDto.Fail(ErrorCode.TITLE_ALREADY_EXISTS);
                     _logger.LogError("Product update failed: Title already exists");
                     return errorResult;
                 }
-                entity.Title = updateProductDto.Title;
+                entity.Title = updateProductDto.Title!;
             }
-            if (updateProductDto.Description is not null)
+            var descriptionChanged = updateProductDto.Description is not null && updateProductDto.Description != entity.Description;
+            if (descriptionChanged)
             {
-                entity.Description = updateProductDto.Description;
+                entity.Description = updateProductDto.Description!;
             }
-            if (updateProductDto.Price is not null)
+            var priceChanged = updateProductDto.Price is not null && updateProductDto.Price != entity.Price;
+            if (priceChanged)
             {
                 entity.Price = updateProductDto.Price;
             }
-            if (updateProductDto.StockQuantity is not null)
+            var stockQuantityChanged = updateProductDto.StockQuantity is not null && updateProductDto.StockQuantity != entity.StockQuantity;
+            if (stockQuantityChanged)
             {
                 entity.StockQuantity = updateProductDto.StockQuantity;
             }
+
+            var isChanged = categoryChanged || titleChanged || descriptionChanged || priceChanged || stockQuantityChanged;
+            if (!isChanged)
+            {
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_MODIFIED);
+                _logger.LogError("Product update failed: No changes detected");
+                return errorResult;
+            }
+
             entity.UpdatedBy = updateProductDto.UpdatedBy;
             entity.UpdatedAt = DateTime.UtcNow;
             await _productRepository.UpdateAsync(entity);

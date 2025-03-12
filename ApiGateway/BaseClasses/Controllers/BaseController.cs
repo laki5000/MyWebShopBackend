@@ -15,6 +15,8 @@ namespace ApiGateway.BaseClasses.Controllers
             { ErrorCode.EMAIL_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
             { ErrorCode.USERNAME_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
             { ErrorCode.PASSWORD_SAME_AS_OLD, dto => new ConflictObjectResult(dto) },
+            { ErrorCode.TITLE_ALREADY_EXISTS, dto => new ConflictObjectResult(dto) },
+            { ErrorCode.NOT_MODIFIED, dto => new BadRequestObjectResult(dto) },
 
             // Authentication and authorization errors
             { ErrorCode.INVALID_USERNAME_OR_PASSWORD, dto => new UnauthorizedObjectResult(dto) },
@@ -30,7 +32,11 @@ namespace ApiGateway.BaseClasses.Controllers
             { ErrorCode.USER_DELETE_FAILED, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status500InternalServerError } },
 
             // Category-related errors
-            { ErrorCode.CATEGORY_NOT_FOUND, dto => new NotFoundObjectResult(dto) }
+            { ErrorCode.CATEGORY_NOT_FOUND, dto => new NotFoundObjectResult(dto) },
+
+            // Product-related errors
+            { ErrorCode.PRODUCT_NOT_FOUND, dto => new NotFoundObjectResult(dto) },
+            { ErrorCode.NOT_OWNER_OF_PRODUCT, dto => new ObjectResult(dto) { StatusCode = StatusCodes.Status403Forbidden } }
         };
 
         protected static IActionResult GetObjectResult(ApiResponseDto apiResponseDto)

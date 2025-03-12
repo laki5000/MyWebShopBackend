@@ -74,16 +74,25 @@ namespace ProductService.App.Services
                 return errorResult;
             }
 
-            if (updateCategoryDto.Name is not null)
+            var nameChanged = updateCategoryDto.Name is not null && updateCategoryDto.Name != entity.Name;
+            if (nameChanged)
             {
-                var existsByName = await _categoryRepository.ExistsByNameAsync(updateCategoryDto.Name, updateCategoryDto.Id!);
+                var existsByName = await _categoryRepository.ExistsByNameAsync(updateCategoryDto.Name!);
                 if (existsByName)
                 {
                     var errorResult = ApiResponseDto.Fail(ErrorCode.NAME_ALREADY_EXISTS);
                     _logger.LogError("Category update failed: Name already exists");
                     return errorResult;
                 }
-                entity.Name = updateCategoryDto.Name;
+                entity.Name = updateCategoryDto.Name!;
+            }
+
+            var isChanged = nameChanged;
+            if (!isChanged)
+            {
+                var errorResult = ApiResponseDto.Fail(ErrorCode.NOT_MODIFIED);
+                _logger.LogError("Category update failed: No changes detected");
+                return errorResult;
             }
 
             entity.UpdatedBy = updateCategoryDto.UpdatedBy;

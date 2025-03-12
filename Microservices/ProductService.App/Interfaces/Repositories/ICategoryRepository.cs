@@ -7,7 +7,6 @@ namespace ProductService.App.Interfaces.Repositories
     {
         Task<bool> ExistsByIdAsync(string id);
         Task<bool> ExistsByNameAsync(string name);
-        Task<bool> ExistsByNameAsync(string name, string id);
         Task<List<Category>> GetAllNotDeletedAsync();
     }
 }
